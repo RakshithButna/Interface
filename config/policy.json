@@ -1,0 +1,50 @@
+{
+  "$comment": "Guardrail policy. Data rather than code, so the people accountable for what the automation may do can read and change it without a deploy.",
+
+  "allowlist": {
+    "$comment": "Only these origins may be touched, checked on navigation AND re-checked after redirects.",
+    "origins": ["http://127.0.0.1:4173"],
+    "pathPatterns": ["/t/**"],
+    "$comment2": "The app's fault-injection control plane is a test affordance and is explicitly off-limits to the agent, so it cannot arm its own failures.",
+    "deniedPathPatterns": ["/_control/**"],
+    "actions": ["navigate", "click", "fill", "select", "press", "waitFor", "extract", "assert"]
+  },
+
+  "risk": {
+    "$comment": "Irreversible steps escalate to a human in BOTH modes. A capability that opens an account does not get to do so unsupervised just because a human happened to start the run.",
+    "unattended": {
+      "safe": "allow",
+      "stateChanging": "allow",
+      "irreversible": "escalate"
+    },
+    "attended": {
+      "safe": "allow",
+      "stateChanging": "allow",
+      "irreversible": "escalate"
+    }
+  },
+
+  "redaction": {
+    "patterns": [
+      { "name": "ssn", "regex": "\\b\\d{3}-\\d{2}-\\d{4}\\b", "flags": "g", "replacement": "[REDACTED:ssn]" },
+      { "name": "card", "regex": "\\b(?:\\d[ -]?){13,19}\\b", "flags": "g", "replacement": "[REDACTED:card]" },
+      {
+        "name": "authHeader",
+        "regex": "(authorization|bearer|api[-_]?key)\\s*[:=]\\s*\\S+",
+        "flags": "gi",
+        "replacement": "$1=[REDACTED]"
+      }
+    ],
+    "$comment": "PII keeps its last 4 characters in logs. A log in which every member ID reads [REDACTED] cannot be used to trace which record a failure happened on, which makes the system unoperable in exactly the situation you need logs for.",
+    "keepLast4ForPii": true
+  },
+
+  "limits": {
+    "maxDiscoverySteps": 30,
+    "maxDiscoveryMs": 300000,
+    "maxLlmCalls": 40,
+    "maxReplayMs": 120000
+  },
+
+  "requireApprovalForUnattended": true
+}

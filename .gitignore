@@ -1,0 +1,20 @@
+# secrets
+.env
+.env.*
+!.env.example
+
+# build
+node_modules/
+dist/
+*.tsbuildinfo
+
+# transient run output (evidence/ is committed deliberately, see README)
+runs/
+.playwright/
+test-results/
+
+# os
+.DS_Store
+
+# assignment brief (not part of the submission)
+Assignment*.pdf

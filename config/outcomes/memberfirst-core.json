@@ -1,0 +1,148 @@
+{
+  "productId": "memberfirst-core",
+  "note": "Exceptional-state vocabulary for the MemberFirst Core product. Authored once per VENDOR PRODUCT and reused by every capability recorded against it, on every tenant. A happy-path discovery run cannot discover these screens -- the model never sees them -- so they are configuration rather than something the recorder infers. This is also the right unit of reuse: hundreds of institutions run this one product, and its error screens are a property of the product, not of the institution.",
+
+  "outcomes": [
+    {
+      "code": "MEMBER_NOT_FOUND",
+      "description": "No member record matched the supplied identifier. A legitimate answer, not a failure: the caller asked about someone who is not a member here.",
+      "disposition": "terminal"
+    },
+    {
+      "code": "PERMISSION_DENIED",
+      "description": "The member record is restricted and this operator may not service it. Requires a supervisor override outside this system.",
+      "disposition": "terminal"
+    },
+    {
+      "code": "VALIDATION_REJECTED",
+      "description": "The application rejected the submitted values (amount below the institution's minimum, malformed input, missing required field). Retryable with corrected inputs.",
+      "disposition": "retryable"
+    }
+  ],
+
+  "outcomeRules": [
+    {
+      "outcome": "MEMBER_NOT_FOUND",
+      "when": {
+        "kind": "textPresent",
+        "text": "No member records matched",
+        "match": "contains",
+        "caseSensitive": false
+      },
+      "message": "No member record matched the supplied identifier."
+    },
+    {
+      "outcome": "PERMISSION_DENIED",
+      "when": {
+        "kind": "any",
+        "of": [
+          {
+            "kind": "textPresent",
+            "text": "do not have permission to service",
+            "match": "contains",
+            "caseSensitive": false
+          },
+          {
+            "kind": "all",
+            "of": [
+              { "kind": "httpStatus", "codes": [403] },
+              {
+                "kind": "textPresent",
+                "text": "Access Denied",
+                "match": "contains",
+                "caseSensitive": false
+              }
+            ]
+          }
+        ]
+      },
+      "message": "This member record is restricted; a supervisor override is required."
+    },
+    {
+      "outcome": "VALIDATION_REJECTED",
+      "when": {
+        "kind": "textPresent",
+        "text": "(must be at least|must be a valid|is required|must be numeric)",
+        "match": "regex",
+        "caseSensitive": false
+      },
+      "message": "The application rejected the submitted values."
+    }
+  ],
+
+  "recoveries": [
+    {
+      "id": "dismiss-maintenance-notice",
+      "description": "An unscheduled maintenance interstitial can appear on any navigation. Dismissing it is safe and returns to the page that was requested.",
+      "when": {
+        "kind": "textPresent",
+        "text": "Scheduled Maintenance Notice",
+        "match": "contains",
+        "caseSensitive": false
+      },
+      "then": {
+        "type": "click",
+        "target": {
+          "description": "the Continue button on the maintenance interstitial (frame omitted: it renders in whichever frame navigated)",
+          "strategies": [{ "kind": "roleName", "role": "button", "name": "Continue", "match": "exact" }],
+          "requireUnique": true,
+          "maxRank": 4
+        }
+      },
+      "maxAttempts": 2,
+      "applies": "global"
+    },
+    {
+      "id": "acknowledge-compliance-notice",
+      "description": "Some institutions configure a compliance acknowledgement after sign-on. Acknowledging it is required to reach any servicing screen and changes no member state.",
+      "when": {
+        "kind": "textPresent",
+        "text": "Compliance Notice",
+        "match": "contains",
+        "caseSensitive": false
+      },
+      "then": {
+        "type": "click",
+        "target": {
+          "description": "the Acknowledge and Continue button (frame omitted: it renders in whichever frame navigated)",
+          "strategies": [
+            { "kind": "roleName", "role": "button", "name": "Acknowledge and Continue", "match": "exact" }
+          ],
+          "requireUnique": true,
+          "maxRank": 4
+        }
+      },
+      "maxAttempts": 2,
+      "applies": "global"
+    },
+    {
+      "id": "session-expired-reauth",
+      "description": "Session timeout mid-flow. Re-run the authentication preamble on the same browser session and resume. Bounded to one attempt: a second expiry in one run means something is wrong beyond an idle timeout.",
+      "when": {
+        "kind": "textPresent",
+        "text": "session has expired",
+        "match": "contains",
+        "caseSensitive": false
+      },
+      "then": { "type": "reauthenticate" },
+      "maxAttempts": 1,
+      "applies": "global"
+    },
+    {
+      "id": "app-error-escalate",
+      "description": "An unhandled application error. Deliberately NOT retried: on a system of record, re-submitting after an unknown server-side failure risks duplicating a transaction that may have partially applied.",
+      "when": {
+        "kind": "textPresent",
+        "text": "Unexpected system error",
+        "match": "contains",
+        "caseSensitive": false
+      },
+      "then": {
+        "type": "escalate",
+        "reason": "The application returned an unexpected system error. A human must confirm whether the transaction partially applied before anything is retried."
+      },
+      "maxAttempts": 1,
+      "applies": "global"
+    }
+  ]
+}

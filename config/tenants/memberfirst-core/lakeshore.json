@@ -1,0 +1,31 @@
+{
+  "tenantId": "lakeshore",
+  "note": "Lakeshore CU runs MemberFirst Core v6.9.4 -- the same vendor product as Westside, rebranded, relabelled, on different route slugs, with a compliance acknowledgement after sign-on and a higher minimum opening deposit. This file is per PRODUCT+TENANT, not per capability: every capability recorded against memberfirst-core picks it up. That is the unit of reuse that makes hundreds of tenants tractable -- a tenant that rebrands is one file to edit, not one edit per recorded flow.",
+
+  "baseUrl": "http://127.0.0.1:4173/t/lakeshore",
+
+  "labelAliases": {
+    "Member ID": "Membership Number",
+    "Member Name": "Name on Record",
+    "Savings Balance": "Savings Bal.",
+    "Member Search": "Find Member",
+    "Search": "Find",
+    "View": "Open",
+    "Open Sub-Account": "Add Sub-Account",
+    "Initial Deposit": "Opening Deposit",
+    "Product Type": "Account Product",
+    "Open Account": "Create Account"
+  },
+
+  "routeAliases": {
+    "member-search": "members/find",
+    "member": "members/detail",
+    "sub-account/new": "members/sub-account"
+  },
+
+  "disableSteps": [],
+  "insertSteps": [],
+
+  "$comment_recoveries": "Lakeshore's post-sign-on compliance acknowledgement needs NO entry here. It is handled by the product-level 'acknowledge-compliance-notice' recovery rule, because an extra mandatory screen is operationally identical to an unexpected interstitial. Modelling it as a recovery rather than as a tenant-specific step means any tenant that switches the setting on or off needs no change at all.",
+  "extraRecoveries": []
+}

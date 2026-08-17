@@ -1,0 +1,30 @@
+{
+  "name": "capability-automation",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Computer-use automation: an LLM discovers a UI flow once, the run is recorded as a typed capability artifact, and that artifact replays deterministically with no model in the loop.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "node --test \"tests/**/*.test.ts\"",
+    "app": "node apps/memberfirst-core/server.ts",
+    "cli": "node src/cli/index.ts",
+    "discover": "node src/cli/index.ts discover",
+    "replay": "node src/cli/index.ts replay",
+    "catalog": "node src/cli/index.ts catalog",
+    "operator": "node src/cli/index.ts operator"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "playwright": "^1.56.1",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@types/node": "^24.9.2",
+    "typescript": "^5.9.3"
+  }
+}
