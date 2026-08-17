@@ -1,0 +1,17 @@
+{
+  "$schema": "https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell.schema.json",
+  "version": "0.2",
+  "language": "en",
+  "words": [
+    "memberfirst", "westside", "lakeshore", "Lakeshore", "Whitfield", "Oyelaran",
+    "Raghunathan", "Southbank", "Northgate", "svc",
+    "Groq", "GROQ", "OPENROUTER", "Ollama", "ollama", "moonshotai", "kimi", "qwen",
+    "openrouter", "opus", "sonnet", "anthropic",
+    "Luhn", "luhn", "frameset", "framesets", "iframes", "cuas",
+    "unattended", "parameterised", "parameterized", "canonicalization",
+    "canonicalisation", "generalising", "behaviour", "behaviours",
+    "reauthenticate", "reauth", "prefault", "gitignored", "jsonl",
+    "cua", "testid", "nonce", "vlt", "sevt", "toolu"
+  ],
+  "ignorePaths": ["node_modules/**", "evidence/**", "package-lock.json", "capabilities/**"]
+}
