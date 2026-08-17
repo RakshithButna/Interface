@@ -388,12 +388,20 @@ export function findOverride(a: CapabilityArtifact, tenantId: string | undefined
  * JSON Schema for a capability's input parameters, in the shape a
  * function-calling model expects. This is what makes a saved artifact directly
  * invocable by an AI agent -- the whole point of calling it a capability.
+ *
+ * `secret` parameters are deliberately EXCLUDED. They are declared inputs of
+ * the capability -- the flow genuinely needs them -- but they are supplied by
+ * the runtime's secret store, keyed by tenant, not by the caller. An agent
+ * asking for a member's savings balance has no business being in possession of
+ * the operator password, and a tool schema that asks it for one is an
+ * invitation for a credential to end up in a model's context window.
  */
 export function inputsToJsonSchema(a: CapabilityArtifact): Record<string, unknown> {
   const properties: Record<string, unknown> = {};
   const required: string[] = [];
 
   for (const p of a.inputs) {
+    if (p.sensitivity === 'secret') continue;
     const prop: Record<string, unknown> = {
       type: p.type === 'enum' ? 'string' : p.type === 'number' ? 'number' : p.type === 'boolean' ? 'boolean' : 'string',
       description: p.description,

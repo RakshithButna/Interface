@@ -28,6 +28,7 @@ export function toolNameFor(a: CapabilityArtifact): string {
 
 export function toToolDefinition(a: CapabilityArtifact): ToolDefinition {
   const outputLines = a.outputs.map((o) => `  - ${o.name} (${o.type}): ${o.description}`);
+  const secretCount = a.inputs.filter((i) => i.sensitivity === 'secret').length;
   const outcomeLines = a.outcomes.map(
     (o) => `  - ${o.code} (${o.disposition}): ${o.description}`,
   );
@@ -40,6 +41,9 @@ export function toToolDefinition(a: CapabilityArtifact): ToolDefinition {
     outputLines.length ? `Returns on success:\n${outputLines.join('\n')}` : 'Returns no data on success.',
     outcomeLines.length
       ? `May instead answer with one of these business outcomes, which are NOT errors:\n${outcomeLines.join('\n')}`
+      : '',
+    secretCount > 0
+      ? `Credentials (${secretCount}) are injected by the runtime from the tenant's secret store and are not parameters you supply.`
       : '',
   ]
     .filter(Boolean)

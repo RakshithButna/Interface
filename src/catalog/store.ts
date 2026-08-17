@@ -88,6 +88,19 @@ export class CapabilityStore {
    * the number meaningless.
    */
   recordReplay(artifact: CapabilityArtifact, result: ReplayResult): CapabilityArtifact {
+    /**
+     * Refusals that happen BEFORE anything ran are not evidence about the
+     * capability, and counting them would be actively harmful: `NOT_APPROVED`
+     * recorded as a failure creates a deadlock where attempting an unattended
+     * run is what makes the capability ineligible for approval. Likewise a
+     * caller passing a malformed member ID says nothing about whether the
+     * recorded flow works.
+     */
+    const preExecutionRefusal =
+      result.status === 'failed' &&
+      (result.error.code === 'NOT_APPROVED' || result.error.code === 'INPUT_VALIDATION_FAILED');
+    if (preExecutionRefusal) return artifact;
+
     const s: Stability = { ...artifact.stability };
     s.replays += 1;
     s.lastReplayAt = new Date().toISOString();

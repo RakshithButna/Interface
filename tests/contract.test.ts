@@ -4,7 +4,8 @@ import assert from 'node:assert/strict';
 import { validateInputs, transformExtracted, coerceOutput } from '../src/replay/inputs.ts';
 import { CapabilityArtifactSchema, inputsToJsonSchema, type CapabilityArtifact } from '../src/schema/artifact.ts';
 import { toToolDefinition } from '../src/catalog/catalog.ts';
-import { approvalReadiness } from '../src/catalog/store.ts';
+import { approvalReadiness, CapabilityStore } from '../src/catalog/store.ts';
+import { rmSync } from 'node:fs';
 import { isConclusive, exitCodeFor, summarize, type ReplayResult } from '../src/schema/result.ts';
 
 function artifact(overrides: Partial<CapabilityArtifact> = {}): CapabilityArtifact {
@@ -115,14 +116,28 @@ describe('agent-facing tool schema', () => {
     assert.match(tool.description, /savingsBalance/);
   });
 
-  test('never publishes an example for a sensitive parameter', () => {
+  test('does not ask the calling agent for credentials', () => {
+    // Credentials are declared inputs of the capability, but the runtime
+    // injects them from the tenant's secret store. Putting them in the tool
+    // schema would invite a model to source a password.
     const schema = inputsToJsonSchema(artifact()) as {
       properties: Record<string, { examples?: unknown[] }>;
       required: string[];
     };
-    assert.equal(schema.properties['operatorPassword']!.examples, undefined, 'no example for a secret');
-    assert.equal(schema.properties['memberId']!.examples, undefined, 'no example for PII either');
-    assert.deepEqual(schema.required.sort(), ['memberId', 'operatorPassword']);
+    assert.equal(schema.properties['operatorPassword'], undefined, 'secrets must not appear in the tool schema');
+    assert.deepEqual(schema.required, ['memberId']);
+    assert.ok(schema.properties['memberId']);
+  });
+
+  test('never publishes an example for a sensitive parameter', () => {
+    const schema = inputsToJsonSchema(artifact()) as {
+      properties: Record<string, { examples?: unknown[] }>;
+    };
+    assert.equal(schema.properties['memberId']!.examples, undefined, 'no example value for PII');
+  });
+
+  test('tells the agent that credentials are runtime-injected', () => {
+    assert.match(toToolDefinition(artifact()).description, /Credentials \(1\) are injected by the runtime/);
   });
 });
 
@@ -179,6 +194,23 @@ describe('approval gating', () => {
   test('business outcomes count as working, not as flakiness', () => {
     const r = approvalReadiness(artifact({ stability: { replays: 3, successes: 0, businessOutcomes: 3, failures: 0, escalations: 0, driftingSteps: [] } }));
     assert.equal(r.ready, true, 'returning MEMBER_NOT_FOUND three times is a capability working correctly');
+  });
+
+  test('a gate refusal does not count against the capability', () => {
+    // Otherwise attempting an unattended run is what makes a capability
+    // permanently ineligible for the approval that would allow it.
+    const store = new CapabilityStore('.test-catalog');
+    const a = artifact({ stability: { replays: 0, successes: 0, businessOutcomes: 0, failures: 0, escalations: 0, driftingSteps: [] } });
+    const refusal: ReplayResult = {
+      runId: 'r', capability: a.name, capabilityVersion: a.version, tenantId: 't',
+      startedAt: 'now', durationMs: 1, steps: [], warnings: [], evidence: {},
+      status: 'failed', partialOutputs: {},
+      error: { code: 'NOT_APPROVED', message: 'not approved' },
+    };
+    const after = store.recordReplay(a, refusal);
+    assert.equal(after.stability.replays, 0);
+    assert.equal(after.stability.failures, 0);
+    rmSync('.test-catalog', { recursive: true, force: true });
   });
 
   test('observed drift is surfaced to the approver', () => {
