@@ -133,6 +133,13 @@ async function cmdDiscover(args: Args): Promise<void> {
 
   const autoApprove = flagBool(args, 'yes', false);
 
+  // Declared parameter sensitivity drives redaction during discovery, exactly
+  // as the artifact's contract does during replay.
+  const declarations = parseParamDeclarations(args);
+  const paramSensitivity = Object.fromEntries(
+    declarations.filter((d) => d.sensitivity).map((d) => [d.name, d.sensitivity!]),
+  );
+
   try {
     const outcome = await runDiscovery(
       {
@@ -141,6 +148,7 @@ async function cmdDiscover(args: Args): Promise<void> {
         tenantId: tenant,
         params: args.params,
         secrets,
+        paramSensitivity,
         maxSteps: flagNumber(args, 'max-steps', policy.limits.maxDiscoverySteps),
       },
       {
@@ -229,7 +237,6 @@ async function cmdDiscover(args: Args): Promise<void> {
 
     /* --- record ------------------------------------------------------- */
 
-    const declarations = parseParamDeclarations(args);
     const { artifact, warnings } = recordArtifact(outcome, {
       name,
       version: flagString(args, 'version', '1.0.0'),

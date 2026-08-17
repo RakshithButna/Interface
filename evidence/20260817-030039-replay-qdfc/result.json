@@ -1,0 +1,82 @@
+{
+  "runId": "[REDACTED:card]replay-qdfc",
+  "capability": "member.lookup_savings_balance",
+  "capabilityVersion": "1.0.0",
+  "tenantId": "westside",
+  "startedAt": "2026-08-17T03:00:39.688Z",
+  "durationMs": 3109,
+  "steps": [
+    {
+      "stepId": "s00_navigate",
+      "intent": "Open the application entry point",
+      "status": "ok",
+      "risk": "safe",
+      "durationMs": 1043
+    },
+    {
+      "stepId": "s01_fill",
+      "intent": "enter operator username",
+      "status": "ok",
+      "risk": "safe",
+      "durationMs": 76,
+      "resolvedBy": "formField",
+      "resolvedRank": 2
+    },
+    {
+      "stepId": "s02_fill",
+      "intent": "enter operator password",
+      "status": "ok",
+      "risk": "safe",
+      "durationMs": 63,
+      "resolvedBy": "formField",
+      "resolvedRank": 2
+    },
+    {
+      "stepId": "s03_click",
+      "intent": "sign on to the system",
+      "status": "ok",
+      "risk": "safe",
+      "durationMs": 604,
+      "resolvedBy": "roleName",
+      "resolvedRank": 3
+    },
+    {
+      "stepId": "s04_click",
+      "intent": "navigate to member search",
+      "status": "ok",
+      "risk": "safe",
+      "durationMs": 625,
+      "resolvedBy": "roleName",
+      "resolvedRank": 3
+    },
+    {
+      "stepId": "s05_fill",
+      "intent": "enter member ID for search",
+      "status": "ok",
+      "risk": "safe",
+      "durationMs": 42,
+      "resolvedBy": "formField",
+      "resolvedRank": 2
+    },
+    {
+      "stepId": "s06_click",
+      "intent": "search for member",
+      "status": "ok",
+      "risk": "safe",
+      "durationMs": 0,
+      "note": "stopped here: business outcome MEMBER_NOT_FOUND"
+    }
+  ],
+  "warnings": [],
+  "evidence": {
+    "runLogPath": "run.jsonl",
+    "screenshotPath": "screenshots/outcome-member_not_found.png",
+    "domSnapshotPath": "snapshots/outcome-member_not_found.html",
+    "a11ySnapshotPath": "snapshots/outcome-member_not_found.a11y.json"
+  },
+  "status": "outcome",
+  "outcome": "MEMBER_NOT_FOUND",
+  "message": "No member record matched the supplied identifier.",
+  "disposition": "terminal",
+  "partialOutputs": {}
+}

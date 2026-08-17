@@ -82,7 +82,15 @@ export class OpenAICompatibleProvider implements LlmProvider {
         lastErr = err;
         // Retry only on transient conditions -- see isTransient().
         if (!isTransient(err) || attempt === this.maxRetries) break;
-        const backoff = Math.min(8000, 500 * 2 ** attempt) + Math.random() * 250;
+        /**
+         * A rate-limited provider tells you exactly how long to wait. Honour
+         * it: exponential backoff capped at 8s will simply fail again against
+         * a per-minute token budget, which is what a free tier actually
+         * enforces. Guessing shorter than the server's own answer is the one
+         * retry strategy guaranteed not to work.
+         */
+        const retryAfter = err instanceof LlmError ? err.retryAfterMs : undefined;
+        const backoff = retryAfter ?? Math.min(8000, 500 * 2 ** attempt) + Math.random() * 250;
         await new Promise((r) => setTimeout(r, backoff));
       }
     }
@@ -111,7 +119,20 @@ export class OpenAICompatibleProvider implements LlmProvider {
 
     const raw = await res.text();
     if (!res.ok) {
-      throw new LlmError(`${this.name} returned ${res.status}`, res.status, raw.slice(0, 800));
+      /**
+       * `tool_use_failed` means the model produced a tool call the provider
+       * could not parse -- it echoes the attempt back in `failed_generation`.
+       * This is a formatting stumble in one sample, not a malformed request,
+       * so it is returned as a response the loop can correct rather than an
+       * error that ends the run.
+       */
+      const malformed = extractFailedGeneration(raw);
+      if (malformed !== null) {
+        return { text: '', toolCalls: [], malformedToolCall: malformed };
+      }
+      const err = new LlmError(`${this.name} returned ${res.status}`, res.status, raw.slice(0, 800));
+      if (res.status === 429) err.retryAfterMs = parseRetryAfter(res, raw);
+      throw err;
     }
 
     let parsed: WireResponse;
@@ -145,6 +166,33 @@ export class OpenAICompatibleProvider implements LlmProvider {
       if (parsed.usage.completion_tokens !== undefined) out.usage.completionTokens = parsed.usage.completion_tokens;
     }
     return out;
+  }
+}
+
+/**
+ * How long to wait after a 429, from the `retry-after` header if present, else
+ * from the wait time providers commonly state in the error message. Capped so
+ * a hostile or mistaken value cannot stall a run indefinitely.
+ */
+function parseRetryAfter(res: Response, body: string): number | undefined {
+  const header = res.headers.get('retry-after');
+  if (header) {
+    const seconds = Number(header);
+    if (Number.isFinite(seconds)) return Math.min(60_000, seconds * 1000 + 250);
+  }
+  const m = /try again in ([\d.]+)\s*s/i.exec(body);
+  if (m?.[1]) return Math.min(60_000, Number(m[1]) * 1000 + 250);
+  return undefined;
+}
+
+/** Returns the echoed bad generation for a `tool_use_failed` error, else null. */
+function extractFailedGeneration(raw: string): string | null {
+  try {
+    const parsed = JSON.parse(raw) as { error?: { code?: string; failed_generation?: string } };
+    if (parsed.error?.code !== 'tool_use_failed') return null;
+    return (parsed.error.failed_generation ?? '').slice(0, 500);
+  } catch {
+    return null;
   }
 }
 

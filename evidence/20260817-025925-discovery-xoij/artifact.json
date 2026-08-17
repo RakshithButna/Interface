@@ -1,0 +1,697 @@
+{
+  "schemaVersion": "1.0.0",
+  "name": "member.lookup_savings_balance",
+  "version": "1.0.0",
+  "title": "member.lookup_savings_balance",
+  "description": "Look up member ${memberId} and read their current savings balance",
+  "status": "draft",
+  "app": {
+    "productId": "memberfirst-core",
+    "productVersion": "7.2.1",
+    "surface": "web",
+    "baseUrl": "http://127.0.0.1:4173/t/westside"
+  },
+  "inputs": [
+    {
+      "name": "memberId",
+      "type": "string",
+      "required": true,
+      "description": "The member identifier to look up.",
+      "sensitivity": "pii"
+    },
+    {
+      "name": "operatorPassword",
+      "type": "string",
+      "required": true,
+      "description": "Credential 'operatorPassword', supplied from the caller's secret store.",
+      "sensitivity": "secret"
+    },
+    {
+      "name": "operatorUsername",
+      "type": "string",
+      "required": true,
+      "description": "Credential 'operatorUsername', supplied from the caller's secret store.",
+      "sensitivity": "secret"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "savingsBalance",
+      "type": "money",
+      "description": "read savings balance",
+      "producedByStep": "s08_extract",
+      "required": true,
+      "sensitivity": "none"
+    }
+  ],
+  "outcomes": [
+    {
+      "code": "MEMBER_NOT_FOUND",
+      "description": "No member record matched the supplied identifier. A legitimate answer, not a failure: the caller asked about someone who is not a member here.",
+      "disposition": "terminal"
+    },
+    {
+      "code": "PERMISSION_DENIED",
+      "description": "The member record is restricted and this operator may not service it. Requires a supervisor override outside this system.",
+      "disposition": "terminal"
+    },
+    {
+      "code": "VALIDATION_REJECTED",
+      "description": "The application rejected the submitted values (amount below the institution's minimum, malformed input, missing required field). Retryable with corrected inputs.",
+      "disposition": "retryable"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s00_navigate",
+      "intent": "Open the application entry point",
+      "action": {
+        "type": "navigate",
+        "url": {
+          "template": "${baseUrl}/"
+        }
+      },
+      "risk": "safe",
+      "outcomeRules": [],
+      "recoveries": [],
+      "timeoutMs": 20000,
+      "optional": false
+    },
+    {
+      "id": "s01_fill",
+      "intent": "enter operator username",
+      "action": {
+        "type": "fill",
+        "target": {
+          "description": "textbox \"Operator ID\"",
+          "frame": [],
+          "strategies": [
+            {
+              "kind": "formField",
+              "name": "username",
+              "controlType": "input"
+            },
+            {
+              "kind": "roleName",
+              "role": "textbox",
+              "name": "Operator ID",
+              "match": "exact"
+            },
+            {
+              "kind": "label",
+              "label": "Operator ID",
+              "via": "adjacentCell",
+              "match": "exact"
+            },
+            {
+              "kind": "text",
+              "text": "Operator ID",
+              "match": "exact",
+              "tag": "input"
+            },
+            {
+              "kind": "structural",
+              "css": "form > table > tbody > tr:nth-of-type(1) > td:nth-of-type(2) > input"
+            }
+          ],
+          "requireUnique": true,
+          "maxRank": 9,
+          "recordedRank": 2,
+          "recordedStrategy": "formField"
+        },
+        "value": {
+          "param": "operatorUsername"
+        },
+        "clearFirst": true
+      },
+      "risk": "safe",
+      "outcomeRules": [],
+      "recoveries": [],
+      "timeoutMs": 15000,
+      "optional": false
+    },
+    {
+      "id": "s02_fill",
+      "intent": "enter operator password",
+      "action": {
+        "type": "fill",
+        "target": {
+          "description": "textbox \"Password\"",
+          "frame": [],
+          "strategies": [
+            {
+              "kind": "formField",
+              "name": "password",
+              "controlType": "input"
+            },
+            {
+              "kind": "roleName",
+              "role": "textbox",
+              "name": "Password",
+              "match": "exact"
+            },
+            {
+              "kind": "label",
+              "label": "Password",
+              "via": "adjacentCell",
+              "match": "exact"
+            },
+            {
+              "kind": "text",
+              "text": "Password",
+              "match": "exact",
+              "tag": "input"
+            },
+            {
+              "kind": "structural",
+              "css": "form > table > tbody > tr:nth-of-type(2) > td:nth-of-type(2) > input"
+            }
+          ],
+          "requireUnique": true,
+          "maxRank": 9,
+          "recordedRank": 2,
+          "recordedStrategy": "formField"
+        },
+        "value": {
+          "param": "operatorPassword"
+        },
+        "clearFirst": true
+      },
+      "risk": "safe",
+      "outcomeRules": [],
+      "recoveries": [],
+      "timeoutMs": 15000,
+      "optional": false
+    },
+    {
+      "id": "s03_click",
+      "intent": "sign on to the system",
+      "action": {
+        "type": "click",
+        "target": {
+          "description": "button \"Sign On\"",
+          "frame": [],
+          "strategies": [
+            {
+              "kind": "roleName",
+              "role": "button",
+              "name": "Sign On",
+              "match": "exact"
+            },
+            {
+              "kind": "label",
+              "label": "Sign On",
+              "via": "for",
+              "match": "exact"
+            },
+            {
+              "kind": "text",
+              "text": "Sign On",
+              "match": "exact",
+              "tag": "input"
+            },
+            {
+              "kind": "structural",
+              "css": "form > table > tbody > tr:nth-of-type(3) > td:nth-of-type(2) > input"
+            }
+          ],
+          "requireUnique": true,
+          "maxRank": 9,
+          "recordedRank": 3,
+          "recordedStrategy": "roleName"
+        }
+      },
+      "risk": "safe",
+      "checkpoint": {
+        "kind": "textPresent",
+        "text": "Servicing Desktop",
+        "match": "contains",
+        "caseSensitive": false
+      },
+      "outcomeRules": [],
+      "recoveries": [],
+      "timeoutMs": 15000,
+      "optional": false
+    },
+    {
+      "id": "s04_click",
+      "intent": "navigate to member search",
+      "action": {
+        "type": "click",
+        "target": {
+          "description": "link \"Member Search\" in column 'Member Search'",
+          "frame": [
+            {
+              "by": "name",
+              "name": "navFrame"
+            }
+          ],
+          "strategies": [
+            {
+              "kind": "roleName",
+              "role": "link",
+              "name": "Member Search",
+              "match": "exact"
+            },
+            {
+              "kind": "label",
+              "label": "Member Search",
+              "via": "for",
+              "match": "exact"
+            },
+            {
+              "kind": "text",
+              "text": "Member Search",
+              "match": "exact",
+              "tag": "a"
+            },
+            {
+              "kind": "structural",
+              "css": "div > table > tbody > tr:nth-of-type(1) > td > a"
+            }
+          ],
+          "requireUnique": true,
+          "maxRank": 9,
+          "recordedRank": 3,
+          "recordedStrategy": "roleName"
+        }
+      },
+      "risk": "safe",
+      "checkpoint": {
+        "kind": "textPresent",
+        "text": "Member Search",
+        "match": "contains",
+        "caseSensitive": false
+      },
+      "outcomeRules": [],
+      "recoveries": [],
+      "timeoutMs": 15000,
+      "optional": false
+    },
+    {
+      "id": "s05_fill",
+      "intent": "enter member ID for search",
+      "action": {
+        "type": "fill",
+        "target": {
+          "description": "textbox \"Member ID\"",
+          "frame": [
+            {
+              "by": "name",
+              "name": "mainFrame"
+            }
+          ],
+          "strategies": [
+            {
+              "kind": "formField",
+              "name": "memberId",
+              "controlType": "input"
+            },
+            {
+              "kind": "roleName",
+              "role": "textbox",
+              "name": "Member ID",
+              "match": "exact"
+            },
+            {
+              "kind": "label",
+              "label": "Member ID",
+              "via": "adjacentCell",
+              "match": "exact"
+            },
+            {
+              "kind": "text",
+              "text": "Member ID",
+              "match": "exact",
+              "tag": "input"
+            },
+            {
+              "kind": "structural",
+              "css": "form > table > tbody > tr:nth-of-type(1) > td:nth-of-type(2) > input"
+            }
+          ],
+          "requireUnique": true,
+          "maxRank": 9,
+          "recordedRank": 2,
+          "recordedStrategy": "formField"
+        },
+        "value": {
+          "param": "memberId"
+        },
+        "clearFirst": true
+      },
+      "risk": "safe",
+      "outcomeRules": [],
+      "recoveries": [],
+      "timeoutMs": 15000,
+      "optional": false
+    },
+    {
+      "id": "s06_click",
+      "intent": "search for member",
+      "action": {
+        "type": "click",
+        "target": {
+          "description": "button \"Search\"",
+          "frame": [
+            {
+              "by": "name",
+              "name": "mainFrame"
+            }
+          ],
+          "strategies": [
+            {
+              "kind": "roleName",
+              "role": "button",
+              "name": "Search",
+              "match": "exact"
+            },
+            {
+              "kind": "label",
+              "label": "Search",
+              "via": "for",
+              "match": "exact"
+            },
+            {
+              "kind": "text",
+              "text": "Search",
+              "match": "exact",
+              "tag": "input"
+            },
+            {
+              "kind": "structural",
+              "css": "form > table > tbody > tr:nth-of-type(3) > td:nth-of-type(2) > input"
+            }
+          ],
+          "requireUnique": true,
+          "maxRank": 9,
+          "recordedRank": 3,
+          "recordedStrategy": "roleName"
+        }
+      },
+      "risk": "safe",
+      "checkpoint": {
+        "kind": "textPresent",
+        "text": "Search Results",
+        "match": "contains",
+        "caseSensitive": false
+      },
+      "outcomeRules": [],
+      "recoveries": [],
+      "timeoutMs": 15000,
+      "optional": false
+    },
+    {
+      "id": "s07_click",
+      "intent": "view member details",
+      "action": {
+        "type": "click",
+        "target": {
+          "description": "link \"View\" in column 'Action'",
+          "frame": [
+            {
+              "by": "name",
+              "name": "mainFrame"
+            }
+          ],
+          "scope": {
+            "kind": "tableRow",
+            "tableDescription": "table [Member ID | Member Name | Status | Branch | Action]",
+            "matchColumn": "Member ID",
+            "matchValue": {
+              "param": "memberId"
+            },
+            "matchMode": "exact"
+          },
+          "strategies": [
+            {
+              "kind": "roleName",
+              "role": "link",
+              "name": "View",
+              "match": "exact"
+            },
+            {
+              "kind": "label",
+              "label": "View",
+              "via": "for",
+              "match": "exact"
+            },
+            {
+              "kind": "text",
+              "text": "View",
+              "match": "exact",
+              "tag": "a"
+            }
+          ],
+          "requireUnique": true,
+          "maxRank": 5,
+          "recordedRank": 3,
+          "recordedStrategy": "roleName"
+        }
+      },
+      "risk": "safe",
+      "checkpoint": {
+        "kind": "textPresent",
+        "text": "Member Detail",
+        "match": "contains",
+        "caseSensitive": false
+      },
+      "outcomeRules": [],
+      "recoveries": [],
+      "timeoutMs": 15000,
+      "optional": false
+    },
+    {
+      "id": "s08_extract",
+      "intent": "read savings balance",
+      "action": {
+        "type": "extract",
+        "target": {
+          "description": "cell \"Primary Share Savings\" in column 'Savings Balance'",
+          "frame": [
+            {
+              "by": "name",
+              "name": "mainFrame"
+            },
+            {
+              "by": "name",
+              "name": "panelFrame"
+            }
+          ],
+          "strategies": [
+            {
+              "kind": "roleName",
+              "role": "cell",
+              "name": "Primary Share Savings",
+              "match": "exact"
+            },
+            {
+              "kind": "label",
+              "label": "Primary Share Savings",
+              "via": "adjacentCell",
+              "match": "exact"
+            },
+            {
+              "kind": "columnCell",
+              "column": "Savings Balance"
+            },
+            {
+              "kind": "structural",
+              "css": "html > body > table > tbody > tr:nth-of-type(2) > td:nth-of-type(4)"
+            }
+          ],
+          "requireUnique": true,
+          "maxRank": 9,
+          "recordedRank": 3,
+          "recordedStrategy": "roleName"
+        },
+        "into": "savingsBalance",
+        "from": "text",
+        "transform": "trim"
+      },
+      "risk": "safe",
+      "outcomeRules": [],
+      "recoveries": [],
+      "timeoutMs": 15000,
+      "optional": false
+    }
+  ],
+  "successCheckpoint": {
+    "kind": "textPresent",
+    "text": "Member Detail",
+    "match": "contains",
+    "caseSensitive": false
+  },
+  "outcomeRules": [
+    {
+      "outcome": "MEMBER_NOT_FOUND",
+      "when": {
+        "kind": "textPresent",
+        "text": "No member records matched",
+        "match": "contains",
+        "caseSensitive": false
+      },
+      "message": "No member record matched the supplied identifier."
+    },
+    {
+      "outcome": "PERMISSION_DENIED",
+      "when": {
+        "kind": "any",
+        "of": [
+          {
+            "kind": "textPresent",
+            "text": "do not have permission to service",
+            "match": "contains",
+            "caseSensitive": false
+          },
+          {
+            "kind": "all",
+            "of": [
+              {
+                "kind": "httpStatus",
+                "codes": [
+                  403
+                ]
+              },
+              {
+                "kind": "textPresent",
+                "text": "Access Denied",
+                "match": "contains",
+                "caseSensitive": false
+              }
+            ]
+          }
+        ]
+      },
+      "message": "This member record is restricted; a supervisor override is required."
+    },
+    {
+      "outcome": "VALIDATION_REJECTED",
+      "when": {
+        "kind": "textPresent",
+        "text": "(must be at least|must be a valid|is required|must be numeric)",
+        "match": "regex",
+        "caseSensitive": false
+      },
+      "message": "The application rejected the submitted values."
+    }
+  ],
+  "recoveries": [
+    {
+      "id": "dismiss-maintenance-notice",
+      "description": "An unscheduled maintenance interstitial can appear on any navigation. Dismissing it is safe and returns to the page that was requested.",
+      "when": {
+        "kind": "textPresent",
+        "text": "Scheduled Maintenance Notice",
+        "match": "contains",
+        "caseSensitive": false
+      },
+      "then": {
+        "type": "click",
+        "target": {
+          "description": "the Continue button on the maintenance interstitial (frame omitted: it renders in whichever frame navigated)",
+          "strategies": [
+            {
+              "kind": "roleName",
+              "role": "button",
+              "name": "Continue",
+              "match": "exact"
+            }
+          ],
+          "requireUnique": true,
+          "maxRank": 4
+        }
+      },
+      "maxAttempts": 2,
+      "applies": "global"
+    },
+    {
+      "id": "acknowledge-compliance-notice",
+      "description": "Some institutions configure a compliance acknowledgement after sign-on. Acknowledging it is required to reach any servicing screen and changes no member state.",
+      "when": {
+        "kind": "textPresent",
+        "text": "Compliance Notice",
+        "match": "contains",
+        "caseSensitive": false
+      },
+      "then": {
+        "type": "click",
+        "target": {
+          "description": "the Acknowledge and Continue button (frame omitted: it renders in whichever frame navigated)",
+          "strategies": [
+            {
+              "kind": "roleName",
+              "role": "button",
+              "name": "Acknowledge and Continue",
+              "match": "exact"
+            }
+          ],
+          "requireUnique": true,
+          "maxRank": 4
+        }
+      },
+      "maxAttempts": 2,
+      "applies": "global"
+    },
+    {
+      "id": "session-expired-reauth",
+      "description": "Session timeout mid-flow. Re-run the authentication preamble on the same browser session and resume. Bounded to one attempt: a second expiry in one run means something is wrong beyond an idle timeout.",
+      "when": {
+        "kind": "textPresent",
+        "text": "session has expired",
+        "match": "contains",
+        "caseSensitive": false
+      },
+      "then": {
+        "type": "reauthenticate"
+      },
+      "maxAttempts": 1,
+      "applies": "global"
+    },
+    {
+      "id": "app-error-escalate",
+      "description": "An unhandled application error. Deliberately NOT retried: on a system of record, re-submitting after an unknown server-side failure risks duplicating a transaction that may have partially applied.",
+      "when": {
+        "kind": "textPresent",
+        "text": "Unexpected system error",
+        "match": "contains",
+        "caseSensitive": false
+      },
+      "then": {
+        "type": "escalate",
+        "reason": "The application returned an unexpected system error. A human must confirm whether the transaction partially applied before anything is retried."
+      },
+      "maxAttempts": 1,
+      "applies": "global"
+    }
+  ],
+  "authPreambleStepIds": [
+    "s00_navigate",
+    "s01_fill",
+    "s02_fill",
+    "s03_click"
+  ],
+  "overrides": [],
+  "provenance": {
+    "discoveryRunId": "[REDACTED:card]discovery-xoij",
+    "recordedAt": "2026-08-17T03:00:30.616Z",
+    "model": "openai/gpt-oss-120b",
+    "provider": "groq",
+    "goal": "Look up member ${memberId} and read their current savings balance",
+    "recordedOnTenant": "westside",
+    "evidencePath": "evidence/[REDACTED:card]discovery-xoij",
+    "canonicalizationNotes": [
+      "s07_click: row anchored on 'Member ID' = input parameter 'memberId'",
+      "s08_extract: dropped a locator rung matching the extracted value",
+      "successCheckpoint: rejected data-dependent text \"$4,281.37\""
+    ]
+  },
+  "stability": {
+    "replays": 0,
+    "successes": 0,
+    "businessOutcomes": 0,
+    "failures": 0,
+    "escalations": 0,
+    "driftingSteps": []
+  }
+}

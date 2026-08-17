@@ -1,0 +1,64 @@
+<!-- frame: (top) url=http://127.0.0.1:4173/t/westside/desktop -->
+<!DOCTYPE html><html><head><title>MemberFirst Core</title></head>
+<frameset cols="180,*" border="1">
+  <frame name="navFrame" src="/t/westside/nav">
+  <frame name="mainFrame" src="/t/westside/home">
+</frameset>
+</html>
+
+<!-- frame: navFrame url=http://127.0.0.1:4173/t/westside/nav -->
+<!DOCTYPE html><html><head><title>Navigation - MemberFirst Core</title><style>
+  body { font-family: Verdana, Arial, sans-serif; font-size: 12px; margin: 0; background: #d4d0c8; color: #111; }
+  table { border-collapse: collapse; }
+  .shell { width: 100%; }
+  .hdr { padding: 8px 10px; font-size: 14px; font-weight: bold; }
+  .panel { background: #fff; border: 2px inset #999; margin: 8px; padding: 10px; }
+  .grid td, .grid th { border: 1px solid #808080; padding: 4px 8px; font-size: 12px; }
+  .grid th { background: #b9c6d8; text-align: left; }
+  .fieldlabel { text-align: right; padding: 4px 6px; white-space: nowrap; font-weight: bold; }
+  .err { background: #ffe0e0; border: 1px solid #a00; padding: 8px; margin-bottom: 8px; color: #7a0000; }
+  .warn { background: #fff6d0; border: 1px solid #b8860b; padding: 8px; margin-bottom: 8px; }
+  .ok { background: #e2f7e2; border: 1px solid #2d7a2d; padding: 8px; margin-bottom: 8px; }
+  input[type=text], input[type=password], select { font-family: Verdana, sans-serif; font-size: 12px; border: 2px inset #999; padding: 2px; }
+  input[type=submit], button { font-family: Verdana, sans-serif; font-size: 12px; padding: 2px 10px; }
+  a { color: #00309c; }
+</style></head>
+<body>
+
+
+<div style="padding:8px">
+  <div style="font-weight:bold;border-bottom:1px solid #888;padding-bottom:4px;margin-bottom:6px">Servicing</div>
+  <table>
+    <tbody><tr><td><a href="/t/westside/member-search" target="mainFrame">Member Search</a></td></tr>
+    <tr><td><a href="/t/westside/home" target="mainFrame">Home</a></td></tr>
+    <tr><td><a href="/t/westside/signoff" target="_top">Sign Off</a></td></tr>
+  </tbody></table>
+</div>
+</body></html>
+
+<!-- frame: mainFrame url=http://127.0.0.1:4173/t/westside/member-search -->
+<!DOCTYPE html><html><head><title>Search Results - MemberFirst Core</title><style>
+  body { font-family: Verdana, Arial, sans-serif; font-size: 12px; margin: 0; background: #d4d0c8; color: #111; }
+  table { border-collapse: collapse; }
+  .shell { width: 100%; }
+  .hdr { padding: 8px 10px; font-size: 14px; font-weight: bold; }
+  .panel { background: #fff; border: 2px inset #999; margin: 8px; padding: 10px; }
+  .grid td, .grid th { border: 1px solid #808080; padding: 4px 8px; font-size: 12px; }
+  .grid th { background: #b9c6d8; text-align: left; }
+  .fieldlabel { text-align: right; padding: 4px 6px; white-space: nowrap; font-weight: bold; }
+  .err { background: #ffe0e0; border: 1px solid #a00; padding: 8px; margin-bottom: 8px; color: #7a0000; }
+  .warn { background: #fff6d0; border: 1px solid #b8860b; padding: 8px; margin-bottom: 8px; }
+  .ok { background: #e2f7e2; border: 1px solid #2d7a2d; padding: 8px; margin-bottom: 8px; }
+  input[type=text], input[type=password], select { font-family: Verdana, sans-serif; font-size: 12px; border: 2px inset #999; padding: 2px; }
+  input[type=submit], button { font-family: Verdana, sans-serif; font-size: 12px; padding: 2px 10px; }
+  a { color: #00309c; }
+</style></head>
+<body>
+
+
+<div class="panel">
+  <h3 style="margin-top:0">Search Results</h3>
+  <div class="warn">No member records matched your search criteria (Member ID ***9999).</div>
+  <p><a href="/t/westside/member-search">New Search</a></p>
+</div>
+</body></html>

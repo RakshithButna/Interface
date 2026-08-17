@@ -57,6 +57,18 @@ export interface LlmResponse {
   usage?: LlmUsage;
   /** Provider's stop reason, for diagnostics. */
   finishReason?: string;
+  /**
+   * Set when the model emitted something the provider recognised as an
+   * attempted tool call but could not parse into one.
+   *
+   * Some hosted providers (Groq is one) validate tool-call syntax server-side
+   * and reject a malformed generation with a 400 rather than returning it. That
+   * is a per-generation formatting stumble, not a broken request -- the very
+   * next sample usually succeeds. Surfacing it as a response the loop can
+   * respond to, rather than an exception, keeps one bad sample from ending a
+   * discovery run that was otherwise going fine.
+   */
+  malformedToolCall?: string;
 }
 
 export interface LlmProvider {
@@ -77,6 +89,8 @@ export class LlmError extends Error {
    * the run part of its budget.
    */
   readonly retryable: boolean | undefined;
+  /** Server-stated wait before retrying, from a 429. Honoured by the client. */
+  retryAfterMs: number | undefined;
 
   constructor(message: string, status?: number, body?: string, retryable?: boolean) {
     super(message);

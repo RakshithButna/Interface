@@ -32,11 +32,12 @@ import type { Surface, Observation, UiNode } from '../surface/types.ts';
 import type { LlmProvider, LlmMessage, ToolCall } from './llm/provider.ts';
 import type { Guard } from '../policy/guard.ts';
 import type { ActionType } from '../policy/config.ts';
-import type { Risk } from '../schema/artifact.ts';
+import type { Risk, Sensitivity } from '../schema/artifact.ts';
 import type { RunContext } from '../observability/run-context.ts';
 import { AGENT_TOOLS } from './tools.ts';
 import { renderObservation } from './render.ts';
 import { classifyRisk } from '../policy/risk.ts';
+import { LlmError } from './llm/provider.ts';
 
 export const SECRET_PATTERN = /^\{\{secret:([a-zA-Z_][a-zA-Z0-9_]*)\}\}$/;
 
@@ -48,6 +49,12 @@ export interface DiscoveryInput {
   params: Record<string, string>;
   /** Values the model may reference only by placeholder. Never sent to it. */
   secrets: Record<string, string>;
+  /**
+   * Declared sensitivity per input parameter, so PII is redacted from the
+   * discovery log the same way it is on the replay path. Without this, a
+   * member ID typed during discovery lands in run.jsonl in the clear.
+   */
+  paramSensitivity?: Record<string, Sensitivity>;
   maxSteps?: number;
 }
 
@@ -143,9 +150,22 @@ export async function runDiscovery(input: DiscoveryInput, deps: DiscoveryDeps): 
   let completionTokens = 0;
   let seq = 0;
 
-  // Register secrets with the redactor before anything can be logged.
+  /**
+   * Register sensitive values with the redactor BEFORE anything can be logged.
+   *
+   * Both kinds matter. Secrets are obvious. Parameters are the easy one to
+   * miss: the replay engine registers them from the artifact's declared
+   * sensitivity, but during discovery there is no artifact yet -- the operator
+   * declared the contract on the command line. Skipping them here means the
+   * very first run, the one whose evidence gets committed, is the one that
+   * leaks the member ID.
+   */
   for (const [name, value] of Object.entries(input.secrets)) {
     ctx.redactor.register(name, value, 'secret');
+  }
+  for (const [name, value] of Object.entries(input.params)) {
+    const sensitivity = input.paramSensitivity?.[name] ?? 'none';
+    if (sensitivity !== 'none') ctx.redactor.register(name, value, sensitivity);
   }
 
   ctx.log('discovery_started', {
@@ -189,6 +209,11 @@ export async function runDiscovery(input: DiscoveryInput, deps: DiscoveryDeps): 
         ? `SECRET PLACEHOLDERS AVAILABLE (pass the placeholder text as the value):\n${secretBlock}`
         : '',
       '',
+      // Said explicitly because models otherwise burn their first turn
+      // navigating to a page that is already on screen.
+      'The application is ALREADY OPEN at its entry point. Do not navigate to it. ' +
+        'Start by acting on the controls in the observation below.',
+      '',
       'Begin. The current screen follows.',
     ]
       .filter(Boolean)
@@ -226,8 +251,17 @@ export async function runDiscovery(input: DiscoveryInput, deps: DiscoveryDeps): 
     try {
       response = await provider.complete({ system: SYSTEM_PROMPT, messages, tools: AGENT_TOOLS });
     } catch (err) {
-      ctx.log('llm_error', { step, message: (err as Error).message });
-      return fail(`LLM call failed: ${(err as Error).message}`, observation);
+      // The provider's response body is the only thing that says WHY a 400
+      // happened. Logging just the status turns a one-line fix into a
+      // debugging session.
+      const detail = err instanceof LlmError && err.body ? ` | ${err.body}` : '';
+      ctx.log('llm_error', {
+        step,
+        message: (err as Error).message,
+        ...(err instanceof LlmError && err.status ? { status: err.status } : {}),
+        ...(err instanceof LlmError && err.body ? { body: err.body } : {}),
+      });
+      return fail(`LLM call failed: ${(err as Error).message}${detail}`, observation);
     }
     llmCalls += 1;
     promptTokens += response.usage?.promptTokens ?? 0;
@@ -243,13 +277,27 @@ export async function runDiscovery(input: DiscoveryInput, deps: DiscoveryDeps): 
     });
 
     if (!call) {
-      // No tool call: nudge once with an explicit instruction rather than
-      // ending the run, since this is usually a formatting stumble.
-      messages.push({ role: 'assistant', content: response.text });
-      messages.push({
-        role: 'user',
-        content: 'You must respond with a tool call. Choose one of the available tools.',
-      });
+      /**
+       * No usable tool call. This is a formatting stumble, not a dead end, so
+       * the loop corrects the model and carries on -- bounded, as ever, by
+       * maxSteps. Letting one bad sample end a run that is otherwise going
+       * fine would make discovery far more fragile than the models are.
+       */
+      if (response.malformedToolCall) {
+        ctx.log('malformed_tool_call', { step, attempted: response.malformedToolCall });
+        messages.push({
+          role: 'user',
+          content:
+            'Your last message tried to call a tool but was not formatted as a tool call, so it was discarded. ' +
+            'Emit the call through the tool-calling interface -- do not write the call out as text. Try again.',
+        });
+      } else {
+        messages.push({ role: 'assistant', content: response.text });
+        messages.push({
+          role: 'user',
+          content: 'You must respond with a tool call. Choose one of the available tools.',
+        });
+      }
       continue;
     }
 

@@ -1,0 +1,17 @@
+{"ts":"2026-08-17T03:00:43.227Z","seq":1,"event":"replay_started","capability":"member.lookup_savings_balance@1.0.0","status":"draft","tenant":"westside","mode":"attended","steps":9,"overrideApplied":false}
+{"ts":"2026-08-17T03:00:43.228Z","seq":2,"event":"step_started","stepId":"s00_navigate","intent":"Open the application entry point","risk":"safe","action":"navigate"}
+{"ts":"2026-08-17T03:00:44.274Z","seq":3,"event":"step_ok","stepId":"s00_navigate","durationMs":1046,"recoveries":[]}
+{"ts":"2026-08-17T03:00:44.275Z","seq":4,"event":"step_started","stepId":"s01_fill","intent":"enter operator username","risk":"safe","action":"fill"}
+{"ts":"2026-08-17T03:00:44.339Z","seq":5,"event":"step_ok","stepId":"s01_fill","durationMs":64,"resolvedBy":"formField","recoveries":[]}
+{"ts":"2026-08-17T03:00:44.339Z","seq":6,"event":"step_started","stepId":"s02_fill","intent":"enter operator password","risk":"safe","action":"fill"}
+{"ts":"2026-08-17T03:00:44.402Z","seq":7,"event":"step_ok","stepId":"s02_fill","durationMs":63,"resolvedBy":"formField","recoveries":[]}
+{"ts":"2026-08-17T03:00:44.402Z","seq":8,"event":"step_started","stepId":"s03_click","intent":"sign on to the system","risk":"safe","action":"click"}
+{"ts":"2026-08-17T03:00:45.021Z","seq":9,"event":"step_ok","stepId":"s03_click","durationMs":619,"resolvedBy":"roleName","recoveries":[]}
+{"ts":"2026-08-17T03:00:45.022Z","seq":10,"event":"step_started","stepId":"s04_click","intent":"navigate to member search","risk":"safe","action":"click"}
+{"ts":"2026-08-17T03:00:45.656Z","seq":11,"event":"step_ok","stepId":"s04_click","durationMs":634,"resolvedBy":"roleName","recoveries":[]}
+{"ts":"2026-08-17T03:00:45.657Z","seq":12,"event":"step_started","stepId":"s05_fill","intent":"enter member ID for search","risk":"safe","action":"fill"}
+{"ts":"2026-08-17T03:00:45.716Z","seq":13,"event":"step_ok","stepId":"s05_fill","durationMs":59,"resolvedBy":"formField","recoveries":[]}
+{"ts":"2026-08-17T03:00:45.716Z","seq":14,"event":"step_started","stepId":"s06_click","intent":"search for member","risk":"safe","action":"click"}
+{"ts":"2026-08-17T03:00:46.318Z","seq":15,"event":"step_ok","stepId":"s06_click","durationMs":602,"resolvedBy":"roleName","recoveries":[]}
+{"ts":"2026-08-17T03:00:46.319Z","seq":16,"event":"step_started","stepId":"s07_click","intent":"view member details","risk":"safe","action":"click"}
+{"ts":"2026-08-17T03:00:46.951Z","seq":17,"event":"business_outcome","outcome":"PERMISSION_DENIED","stepId":"s07_click","message":"This member record is restricted; a supervisor override is required."}

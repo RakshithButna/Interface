@@ -103,6 +103,35 @@ function escapeRegex(s: string): string {
   return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
+/**
+ * Replace concrete parameter values in free text with their parameter name.
+ *
+ * The operator's goal is natural language -- "look up member 12345 and read
+ * their savings balance" -- and it becomes the artifact's `description` and
+ * `provenance.goal`. Both are committed to version control, so a member ID
+ * sitting in that sentence is regulated data checked into git. The evidence
+ * copy is redacted on write, but the canonical artifact is not, and that is
+ * the copy that lives in the repo forever.
+ *
+ * Generalising rather than masking fixes the leak and improves the artifact at
+ * the same time: "look up member ${memberId}" is what a REUSABLE capability's
+ * description should have said in the first place. Masking to ***2345 would
+ * remove the PII but leave a description that still reads as one-off.
+ *
+ * Applied to every parameter, not only the sensitive ones -- a description
+ * naming one run's concrete inputs is wrong for a reusable contract either way.
+ */
+export function generalizeText(text: string, params: Record<string, string>): string {
+  let out = text;
+  // Longest first so a short value cannot chew a hole in a longer one.
+  for (const [name, value] of Object.entries(params).sort((a, b) => b[1].length - a[1].length)) {
+    const v = value.trim();
+    if (v.length < 2) continue;
+    out = out.split(v).join(`\${${name}}`);
+  }
+  return out;
+}
+
 function headings(obs: Observation): string[] {
   return obs.nodes.filter((n) => n.role === 'heading' && n.name).map((n) => n.name);
 }
@@ -245,12 +274,51 @@ export function recordArtifact(outcome: DiscoveryOutcome, opts: RecordOptions): 
 
   /* --- success checkpoint ------------------------------------------------ */
 
+  /**
+   * A checkpoint must assert a property of the FLOW, never a value from this
+   * particular run.
+   *
+   * Models reliably nominate the answer they just found -- here the model
+   * offered "$4,281.37", which is member 12345's balance. That reads like a
+   * perfect proof of success and is in fact the opposite: it asserts the
+   * capability only worked for the one member it was recorded against, so the
+   * very first invocation with a different member fails with
+   * SUCCESS_CHECKPOINT_FAILED even though every step ran correctly.
+   *
+   * This is the same defect as a row anchor pinned to a row position, in a
+   * different place, so it gets the same treatment: detect run-specific data
+   * and fall back to something structural. A heading is the right substitute --
+   * it is what a human operator uses to know they arrived, it is identical for
+   * every member, and it is absent on the error screens.
+   */
+  const dataValues = [...Object.values(outcome.outputs), ...Object.values(opts.params)]
+    .map((v) => String(v).trim())
+    .filter((v) => v.length >= 2);
+
+  const nominated = outcome.checkpointText?.trim();
+  const nominatedIsDataDependent =
+    nominated !== undefined && dataValues.some((v) => nominated.includes(v));
+
+  const structuralFallback = (): Assertion => {
+    const finalHeading = headings(outcome.finalObservation).find(
+      (h) => !dataValues.some((v) => h.includes(v)),
+    );
+    return finalHeading ? A.text(finalHeading) : A.url(escapeRegex(outcome.finalObservation.url));
+  };
+
   let successCheckpoint: Assertion;
-  if (outcome.checkpointText) {
-    successCheckpoint = A.text(outcome.checkpointText);
+  if (nominated && !nominatedIsDataDependent) {
+    successCheckpoint = A.text(nominated);
+  } else if (nominatedIsDataDependent) {
+    successCheckpoint = structuralFallback();
+    warnings.push(
+      `The run nominated ${JSON.stringify(nominated)} as the success condition, but that is a value ` +
+        `from this run rather than a property of the flow -- it would only ever hold for these exact ` +
+        `inputs. Replaced with a structural condition; review that it is right.`,
+    );
+    canonicalizationNotes.push(`successCheckpoint: rejected data-dependent text ${JSON.stringify(nominated)}`);
   } else {
-    const finalHeading = headings(outcome.finalObservation)[0];
-    successCheckpoint = finalHeading ? A.text(finalHeading) : A.url(escapeRegex(outcome.finalObservation.url));
+    successCheckpoint = structuralFallback();
     warnings.push(
       'The run did not nominate checkpoint text; the success condition was inferred from the final screen and should be reviewed.',
     );
@@ -267,7 +335,8 @@ export function recordArtifact(outcome: DiscoveryOutcome, opts: RecordOptions): 
     name: opts.name,
     version: opts.version,
     title: opts.title,
-    description: opts.description,
+    // Generalised so a concrete input value cannot be committed to git.
+    description: generalizeText(opts.description, opts.params),
     // Always draft. An LLM-authored flow reaching production without a human
     // looking at it would make the rest of the guardrails decorative.
     status: 'draft',
@@ -291,7 +360,7 @@ export function recordArtifact(outcome: DiscoveryOutcome, opts: RecordOptions): 
       recordedAt: new Date().toISOString(),
       model: opts.model,
       provider: opts.provider,
-      goal: outcome.goal,
+      goal: generalizeText(outcome.goal, opts.params),
       recordedOnTenant: opts.tenantId,
       ...(opts.evidencePath ? { evidencePath: opts.evidencePath } : {}),
       canonicalizationNotes,
@@ -385,6 +454,27 @@ export function recordArtifact(outcome: DiscoveryOutcome, opts: RecordOptions): 
       case 'extract': {
         const name = action.outputName!;
         const looksLikeMoney = /^\$?[\d,]+\.\d{2}$/.test((action.extractedValue ?? '').trim());
+
+        /**
+         * Drop any ladder rung that matches on the extracted VALUE.
+         *
+         * Capture records a `text` strategy from the node's own text, which for
+         * an extract step is the datum we just read -- "$4,281.37". That rung
+         * can only ever match a cell that happens to hold this run's answer, so
+         * on a different member it either misses (harmless) or matches some
+         * unrelated cell with a coincidentally equal value (not harmless). It
+         * is never the rung we want, so it should not be in the ladder.
+         */
+        const extracted = (action.extractedValue ?? '').trim();
+        if (extracted.length >= 2) {
+          const before = capture.target.strategies.length;
+          capture.target.strategies = capture.target.strategies.filter(
+            (s) => !(s.kind === 'text' && s.text.trim() === extracted),
+          );
+          if (capture.target.strategies.length < before) {
+            canonicalizationNotes.push(`${id}: dropped a locator rung matching the extracted value`);
+          }
+        }
         outputs.push({
           name,
           type: looksLikeMoney ? 'money' : 'string',

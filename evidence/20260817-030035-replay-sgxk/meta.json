@@ -1,0 +1,10 @@
+{
+  "runId": "[REDACTED:card]replay-sgxk",
+  "kind": "replay",
+  "startedAt": "2026-08-17T03:00:35.270Z",
+  "finishedAt": "2026-08-17T03:00:39.183Z",
+  "redactedValueCount": 5,
+  "status": "success",
+  "capability": "member.lookup_savings_balance@1.0.0",
+  "tenant": "westside"
+}

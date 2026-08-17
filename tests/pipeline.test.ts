@@ -92,7 +92,7 @@ async function recordLookupCapability(): Promise<CapabilityArtifact> {
       entryUrl: `${ORIGIN}/t/westside/`,
       goal: 'Look up member 12345 and read their current savings balance',
       secrets: CREDS,
-      checkpointText: 'Member Detail',
+      checkpointText: '$4,281.37', // mirrors what the real model actually nominated
       summary: 'Signed on, searched for the member, opened their record and read the savings balance.',
       steps: [
         { kind: 'fill', find: find.field('username'), secretRef: 'operatorUsername', intent: 'enter the operator ID' },
@@ -217,6 +217,45 @@ describe('record -> replay pipeline', { timeout: 180_000 }, () => {
     assert.equal(target.scope?.matchColumn, 'Member ID');
     assert.deepEqual(target.scope?.matchValue, { param: 'memberId' });
     assert.ok(!target.strategies.some((s) => s.kind === 'structural'));
+  });
+
+  test('no input value is committed into the artifact as free text', () => {
+    // description and provenance.goal come from the operator's natural-language
+    // goal, which names a real member. The artifact is committed to git, so a
+    // raw member ID there is regulated data checked into version control.
+    // Generalising to ${memberId} removes the PII and makes the description
+    // correct for a reusable capability at the same time.
+    assert.ok(!artifact.description.includes('12345'), artifact.description);
+    assert.ok(!artifact.provenance.goal.includes('12345'), artifact.provenance.goal);
+    // The goal names the member, so it must come back parameterised.
+    assert.match(artifact.provenance.goal, /\$\{memberId\}/);
+  });
+
+  test('rejects a success checkpoint made of run-specific data', () => {
+    // The real LLM run nominated "$4,281.37" -- member 12345's balance -- as
+    // proof of success. That reads like a perfect checkpoint and is the
+    // opposite: it asserts the capability only ever worked for one member, so
+    // the first invocation with a different member fails even though every
+    // step ran. The recorder must reject it for something structural.
+    const cp = artifact.successCheckpoint as { kind: string; text?: string };
+    assert.equal(cp.kind, 'textPresent');
+    assert.ok(cp.text, 'a success condition must exist');
+    assert.ok(
+      !/\d[\d,]*\.\d{2}/.test(cp.text!),
+      `checkpoint must not contain a value from the run, got ${JSON.stringify(cp.text)}`,
+    );
+  });
+
+  test('the extract step has no locator rung matching the extracted value', () => {
+    // Capture records a `text` rung from the node's own text, which on an
+    // extract step is the datum just read. It can only match a cell holding
+    // this run's answer, so it is never the rung we want.
+    const step = artifact.steps.find((s) => s.action.type === 'extract')!;
+    const target = (step.action as { target: { strategies: Array<{ kind: string; text?: string }> } }).target;
+    assert.ok(
+      !target.strategies.some((s) => s.kind === 'text' && /\d[\d,]*\.\d{2}/.test(s.text ?? '')),
+      'no ladder rung may match on the extracted value',
+    );
   });
 
   test('replays successfully and returns the typed output', async () => {

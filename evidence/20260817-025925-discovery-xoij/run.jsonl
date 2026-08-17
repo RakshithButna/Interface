@@ -1,0 +1,28 @@
+{"ts":"2026-08-17T02:59:25.733Z","seq":1,"event":"discovery_started","goal":"Look up member ***2345 and read their current savings balance","entryUrl":"http://127.0.0.1:4173/t/westside/","tenant":"westside","params":{"memberId":"***2345"},"secretNames":["operatorUsername","operatorPassword"],"provider":"groq","model":"openai/gpt-oss-120b","maxSteps":22}
+{"ts":"2026-08-17T02:59:26.269Z","seq":2,"event":"observation","step":1,"url":"http://127.0.0.1:4173/t/westside/","httpStatus":200,"frames":1,"interactiveNodes":3}
+{"ts":"2026-08-17T02:59:26.861Z","seq":3,"event":"llm_decision","step":1,"tool":"fill","args":{"intent":"enter operator username","ref":"0#0","value":"{{secret:operatorUsername}}"},"reasoning":"","finishReason":"tool_calls"}
+{"ts":"2026-08-17T02:59:26.936Z","seq":4,"event":"action","kind":"fill","ref":"0#0","control":"Operator ID","risk":"safe","intent":"enter operator username","value":"{{secret:operatorUsername}}","url":"http://127.0.0.1:4173/t/westside/"}
+{"ts":"2026-08-17T02:59:26.938Z","seq":5,"event":"observation","step":2,"url":"http://127.0.0.1:4173/t/westside/","httpStatus":200,"frames":1,"interactiveNodes":3}
+{"ts":"2026-08-17T02:59:27.560Z","seq":6,"event":"llm_decision","step":2,"tool":"fill","args":{"intent":"enter operator password","ref":"0#1","value":"{{secret:operatorPassword}}"},"reasoning":"","finishReason":"tool_calls"}
+{"ts":"2026-08-17T02:59:27.634Z","seq":7,"event":"action","kind":"fill","ref":"0#1","control":"Password","risk":"safe","intent":"enter operator password","value":"{{secret:operatorPassword}}","url":"http://127.0.0.1:4173/t/westside/"}
+{"ts":"2026-08-17T02:59:27.637Z","seq":8,"event":"observation","step":3,"url":"http://127.0.0.1:4173/t/westside/","httpStatus":200,"frames":1,"interactiveNodes":3}
+{"ts":"2026-08-17T02:59:27.950Z","seq":9,"event":"llm_decision","step":3,"tool":"click","args":{"intent":"sign on to the system","ref":"0#2"},"reasoning":"","finishReason":"tool_calls"}
+{"ts":"2026-08-17T02:59:28.566Z","seq":10,"event":"action","kind":"click","ref":"0#2","control":"Sign On","risk":"safe","intent":"sign on to the system","url":"http://127.0.0.1:4173/t/westside/desktop"}
+{"ts":"2026-08-17T02:59:28.571Z","seq":11,"event":"observation","step":4,"url":"http://127.0.0.1:4173/t/westside/desktop","httpStatus":200,"frames":3,"interactiveNodes":3}
+{"ts":"2026-08-17T02:59:28.964Z","seq":12,"event":"llm_decision","step":4,"tool":"click","args":{"intent":"navigate to member search","ref":"1#0"},"reasoning":"","finishReason":"tool_calls"}
+{"ts":"2026-08-17T02:59:29.624Z","seq":13,"event":"action","kind":"click","ref":"1#0","control":"Member Search","risk":"safe","intent":"navigate to member search","url":"http://127.0.0.1:4173/t/westside/desktop"}
+{"ts":"2026-08-17T02:59:29.637Z","seq":14,"event":"observation","step":5,"url":"http://127.0.0.1:4173/t/westside/desktop","httpStatus":200,"frames":3,"interactiveNodes":6}
+{"ts":"2026-08-17T02:59:30.122Z","seq":15,"event":"llm_decision","step":5,"tool":"fill","args":{"intent":"enter member ID for search","ref":"2#0","value":"***2345"},"reasoning":"","finishReason":"tool_calls"}
+{"ts":"2026-08-17T02:59:30.179Z","seq":16,"event":"action","kind":"fill","ref":"2#0","control":"Member ID","risk":"safe","intent":"enter member ID for search","value":"***2345","url":"http://127.0.0.1:4173/t/westside/desktop"}
+{"ts":"2026-08-17T02:59:30.184Z","seq":17,"event":"observation","step":6,"url":"http://127.0.0.1:4173/t/westside/desktop","httpStatus":200,"frames":3,"interactiveNodes":6}
+{"ts":"2026-08-17T02:59:30.651Z","seq":18,"event":"llm_decision","step":6,"tool":"click","args":{"intent":"search for member","ref":"2#2"},"reasoning":"","finishReason":"tool_calls"}
+{"ts":"2026-08-17T02:59:31.241Z","seq":19,"event":"action","kind":"click","ref":"2#2","control":"Search","risk":"safe","intent":"search for member","url":"http://127.0.0.1:4173/t/westside/desktop"}
+{"ts":"2026-08-17T02:59:31.253Z","seq":20,"event":"observation","step":7,"url":"http://127.0.0.1:4173/t/westside/desktop","httpStatus":200,"frames":3,"interactiveNodes":5}
+{"ts":"2026-08-17T02:59:45.095Z","seq":21,"event":"llm_decision","step":7,"tool":"click","args":{"intent":"view member details","ref":"2#0"},"reasoning":"","finishReason":"tool_calls"}
+{"ts":"2026-08-17T02:59:45.732Z","seq":22,"event":"action","kind":"click","ref":"2#0","control":"View","risk":"safe","intent":"view member details","url":"http://127.0.0.1:4173/t/westside/desktop"}
+{"ts":"2026-08-17T02:59:45.740Z","seq":23,"event":"observation","step":8,"url":"http://127.0.0.1:4173/t/westside/desktop","httpStatus":200,"frames":4,"interactiveNodes":5}
+{"ts":"2026-08-17T03:00:02.648Z","seq":24,"event":"llm_decision","step":8,"tool":"extract","args":{"intent":"read savings balance","name":"savingsBalance","ref":"3#7"},"reasoning":"","finishReason":"tool_calls"}
+{"ts":"2026-08-17T03:00:02.696Z","seq":25,"event":"action","kind":"extract","ref":"3#7","control":"Primary Share Savings","risk":"safe","intent":"read savings balance","outputName":"savingsBalance","extractedValue":"$4,281.37","url":"http://127.0.0.1:4173/t/westside/desktop"}
+{"ts":"2026-08-17T03:00:02.703Z","seq":26,"event":"observation","step":9,"url":"http://127.0.0.1:4173/t/westside/desktop","httpStatus":200,"frames":4,"interactiveNodes":5}
+{"ts":"2026-08-17T03:00:30.585Z","seq":27,"event":"llm_decision","step":9,"tool":"done","args":{"checkpointText":"$4,281.37","summary":"Retrieved the savings balance for member ***2345, which is $4,281.37."},"reasoning":"","finishReason":"tool_calls"}
+{"ts":"2026-08-17T03:00:30.608Z","seq":28,"event":"discovery_succeeded","summary":"Retrieved the savings balance for member ***2345, which is $4,281.37.","checkpointText":"$4,281.37","outputs":["savingsBalance"]}
