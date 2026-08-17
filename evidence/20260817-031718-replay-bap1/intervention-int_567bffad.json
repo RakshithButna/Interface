@@ -1,0 +1,23 @@
+{
+  "id": "int_567bffad",
+  "status": "open",
+  "createdAt": "2026-08-17T03:17:21.691Z",
+  "humanActions": [],
+  "kind": "recovery_escalation",
+  "runId": "20260817-031718-replay-bap1",
+  "goal": "Look up member ${memberId} and read their current savings balance",
+  "tenantId": "westside",
+  "reason": "The application returned an unexpected system error. A human must confirm whether the transaction partially applied before anything is retried.",
+  "detail": "Recovery rule 'app-error-escalate' routed this to a human rather than retrying.",
+  "currentUrl": "http://127.0.0.1:4173/t/westside/desktop",
+  "evidence": {
+    "runLogPath": "run.jsonl",
+    "screenshotPath": "screenshots/escalation-s06_click.png",
+    "domSnapshotPath": "snapshots/escalation-s06_click.html",
+    "a11ySnapshotPath": "snapshots/escalation-s06_click.a11y.json"
+  },
+  "capability": "member.lookup_savings_balance",
+  "capabilityVersion": "1.0.0",
+  "stepId": "s06_click",
+  "stepIntent": "perform member search"
+}

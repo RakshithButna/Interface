@@ -1,0 +1,210 @@
+{
+  "url": "http://127.0.0.1:4173/t/westside/desktop",
+  "title": "MemberFirst Core",
+  "httpStatus": 500,
+  "frames": [
+    {
+      "index": 0,
+      "path": [],
+      "url": "http://127.0.0.1:4173/t/westside/desktop",
+      "text": ""
+    },
+    {
+      "index": 1,
+      "path": [
+        {
+          "by": "name",
+          "name": "navFrame"
+        }
+      ],
+      "url": "http://127.0.0.1:4173/t/westside/nav",
+      "text": "Servicing Member Search Home Sign Off"
+    },
+    {
+      "index": 2,
+      "path": [
+        {
+          "by": "name",
+          "name": "mainFrame"
+        }
+      ],
+      "url": "http://127.0.0.1:4173/t/westside/member-search",
+      "text": "Unexpected system error. The transaction could not be completed. Reference ERR-MSWNXSOP. Contact the service desk if this persists."
+    }
+  ],
+  "nodes": [
+    {
+      "ref": "1#0",
+      "role": "link",
+      "name": "Member Search",
+      "nameSource": "textContent",
+      "interactive": true,
+      "framePath": [
+        {
+          "by": "name",
+          "name": "navFrame"
+        }
+      ],
+      "frameIndex": 1,
+      "tag": "a",
+      "css": "div > table > tbody > tr:nth-of-type(1) > td > a",
+      "text": "Member Search",
+      "href": "http://127.0.0.1:4173/t/westside/member-search",
+      "table": {
+        "headers": [
+          "Member Search"
+        ],
+        "rowCells": [
+          "Member Search"
+        ],
+        "rowIndex": 0,
+        "colIndex": 0,
+        "columnHeader": "Member Search"
+      }
+    },
+    {
+      "ref": "1#1",
+      "role": "link",
+      "name": "Home",
+      "nameSource": "textContent",
+      "interactive": true,
+      "framePath": [
+        {
+          "by": "name",
+          "name": "navFrame"
+        }
+      ],
+      "frameIndex": 1,
+      "tag": "a",
+      "css": "div > table > tbody > tr:nth-of-type(2) > td > a",
+      "text": "Home",
+      "href": "http://127.0.0.1:4173/t/westside/home",
+      "table": {
+        "headers": [
+          "Member Search"
+        ],
+        "rowCells": [
+          "Home"
+        ],
+        "rowIndex": 1,
+        "colIndex": 0,
+        "columnHeader": "Member Search"
+      }
+    },
+    {
+      "ref": "1#2",
+      "role": "link",
+      "name": "Sign Off",
+      "nameSource": "textContent",
+      "interactive": true,
+      "framePath": [
+        {
+          "by": "name",
+          "name": "navFrame"
+        }
+      ],
+      "frameIndex": 1,
+      "tag": "a",
+      "css": "div > table > tbody > tr:nth-of-type(3) > td > a",
+      "text": "Sign Off",
+      "href": "http://127.0.0.1:4173/t/westside/signoff",
+      "table": {
+        "headers": [
+          "Member Search"
+        ],
+        "rowCells": [
+          "Sign Off"
+        ],
+        "rowIndex": 2,
+        "colIndex": 0,
+        "columnHeader": "Member Search"
+      }
+    },
+    {
+      "ref": "1#3",
+      "role": "cell",
+      "name": "Member Search",
+      "nameSource": "textContent",
+      "interactive": false,
+      "framePath": [
+        {
+          "by": "name",
+          "name": "navFrame"
+        }
+      ],
+      "frameIndex": 1,
+      "tag": "td",
+      "css": "body > div > table > tbody > tr:nth-of-type(1) > td",
+      "text": "Member Search",
+      "table": {
+        "headers": [
+          "Member Search"
+        ],
+        "rowCells": [
+          "Member Search"
+        ],
+        "rowIndex": 0,
+        "colIndex": 0,
+        "columnHeader": "Member Search"
+      }
+    },
+    {
+      "ref": "1#4",
+      "role": "cell",
+      "name": "Home",
+      "nameSource": "textContent",
+      "interactive": false,
+      "framePath": [
+        {
+          "by": "name",
+          "name": "navFrame"
+        }
+      ],
+      "frameIndex": 1,
+      "tag": "td",
+      "css": "body > div > table > tbody > tr:nth-of-type(2) > td",
+      "text": "Home",
+      "table": {
+        "headers": [
+          "Member Search"
+        ],
+        "rowCells": [
+          "Home"
+        ],
+        "rowIndex": 1,
+        "colIndex": 0,
+        "columnHeader": "Member Search"
+      }
+    },
+    {
+      "ref": "1#5",
+      "role": "cell",
+      "name": "Sign Off",
+      "nameSource": "textContent",
+      "interactive": false,
+      "framePath": [
+        {
+          "by": "name",
+          "name": "navFrame"
+        }
+      ],
+      "frameIndex": 1,
+      "tag": "td",
+      "css": "body > div > table > tbody > tr:nth-of-type(3) > td",
+      "text": "Sign Off",
+      "table": {
+        "headers": [
+          "Member Search"
+        ],
+        "rowCells": [
+          "Sign Off"
+        ],
+        "rowIndex": 2,
+        "colIndex": 0,
+        "columnHeader": "Member Search"
+      }
+    }
+  ],
+  "capturedAt": "2026-08-17T03:17:21.691Z",
+  "truncated": false
+}

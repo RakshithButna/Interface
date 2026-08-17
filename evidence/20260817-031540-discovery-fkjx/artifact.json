@@ -687,12 +687,11 @@
     ]
   },
   "stability": {
-    "replays": 8,
-    "successes": 5,
-    "businessOutcomes": 2,
+    "replays": 0,
+    "successes": 0,
+    "businessOutcomes": 0,
     "failures": 0,
-    "escalations": 1,
-    "lastReplayAt": "2026-08-17T03:17:26.480Z",
+    "escalations": 0,
     "driftingSteps": []
   }
 }

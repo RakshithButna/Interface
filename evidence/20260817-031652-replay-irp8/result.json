@@ -1,0 +1,97 @@
+{
+  "runId": "20260817-031652-replay-irp8",
+  "capability": "member.lookup_savings_balance",
+  "capabilityVersion": "1.0.0",
+  "tenantId": "westside",
+  "startedAt": "2026-08-17T03:16:52.421Z",
+  "durationMs": 3773,
+  "steps": [
+    {
+      "stepId": "s00_navigate",
+      "intent": "Open the application entry point",
+      "status": "ok",
+      "risk": "safe",
+      "durationMs": 1070
+    },
+    {
+      "stepId": "s01_fill",
+      "intent": "enter operator username",
+      "status": "ok",
+      "risk": "safe",
+      "durationMs": 104,
+      "resolvedBy": "formField",
+      "resolvedRank": 2
+    },
+    {
+      "stepId": "s02_fill",
+      "intent": "enter operator password",
+      "status": "ok",
+      "risk": "safe",
+      "durationMs": 49,
+      "resolvedBy": "formField",
+      "resolvedRank": 2
+    },
+    {
+      "stepId": "s03_click",
+      "intent": "sign on to the system",
+      "status": "ok",
+      "risk": "safe",
+      "durationMs": 608,
+      "resolvedBy": "roleName",
+      "resolvedRank": 3
+    },
+    {
+      "stepId": "s04_click",
+      "intent": "navigate to member search",
+      "status": "ok",
+      "risk": "safe",
+      "durationMs": 626,
+      "resolvedBy": "roleName",
+      "resolvedRank": 3
+    },
+    {
+      "stepId": "s05_fill",
+      "intent": "enter member ID for search",
+      "status": "ok",
+      "risk": "safe",
+      "durationMs": 48,
+      "resolvedBy": "formField",
+      "resolvedRank": 2
+    },
+    {
+      "stepId": "s06_click",
+      "intent": "perform member search",
+      "status": "ok",
+      "risk": "safe",
+      "durationMs": 601,
+      "resolvedBy": "roleName",
+      "resolvedRank": 3
+    },
+    {
+      "stepId": "s07_click",
+      "intent": "view member details",
+      "status": "ok",
+      "risk": "safe",
+      "durationMs": 625,
+      "resolvedBy": "roleName",
+      "resolvedRank": 3
+    },
+    {
+      "stepId": "s08_extract",
+      "intent": "extract savings balance",
+      "status": "ok",
+      "risk": "safe",
+      "durationMs": 34,
+      "resolvedBy": "roleName",
+      "resolvedRank": 3
+    }
+  ],
+  "warnings": [],
+  "evidence": {
+    "runLogPath": "run.jsonl"
+  },
+  "status": "success",
+  "outputs": {
+    "savingsBalance": 4281.37
+  }
+}

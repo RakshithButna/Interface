@@ -1,0 +1,79 @@
+{
+  "runId": "20260817-031718-replay-bap1",
+  "capability": "member.lookup_savings_balance",
+  "capabilityVersion": "1.0.0",
+  "tenantId": "westside",
+  "startedAt": "2026-08-17T03:17:18.598Z",
+  "durationMs": 3094,
+  "steps": [
+    {
+      "stepId": "s00_navigate",
+      "intent": "Open the application entry point",
+      "status": "ok",
+      "risk": "safe",
+      "durationMs": 1044
+    },
+    {
+      "stepId": "s01_fill",
+      "intent": "enter operator username",
+      "status": "ok",
+      "risk": "safe",
+      "durationMs": 66,
+      "resolvedBy": "formField",
+      "resolvedRank": 2
+    },
+    {
+      "stepId": "s02_fill",
+      "intent": "enter operator password",
+      "status": "ok",
+      "risk": "safe",
+      "durationMs": 67,
+      "resolvedBy": "formField",
+      "resolvedRank": 2
+    },
+    {
+      "stepId": "s03_click",
+      "intent": "sign on to the system",
+      "status": "ok",
+      "risk": "safe",
+      "durationMs": 616,
+      "resolvedBy": "roleName",
+      "resolvedRank": 3
+    },
+    {
+      "stepId": "s04_click",
+      "intent": "navigate to member search",
+      "status": "ok",
+      "risk": "safe",
+      "durationMs": 633,
+      "resolvedBy": "roleName",
+      "resolvedRank": 3
+    },
+    {
+      "stepId": "s05_fill",
+      "intent": "enter member ID for search",
+      "status": "ok",
+      "risk": "safe",
+      "durationMs": 43,
+      "resolvedBy": "formField",
+      "resolvedRank": 2
+    }
+  ],
+  "warnings": [
+    {
+      "code": "RECOVERY_APPLIED",
+      "stepId": "s06_click",
+      "message": "Applied recovery 'app-error-escalate': An unhandled application error. Deliberately NOT retried: on a system of record, re-submitting after an unknown server-side failure risks duplicating a transaction that may have partially applied."
+    }
+  ],
+  "evidence": {
+    "runLogPath": "run.jsonl",
+    "screenshotPath": "screenshots/escalation-s06_click.png",
+    "domSnapshotPath": "snapshots/escalation-s06_click.html",
+    "a11ySnapshotPath": "snapshots/escalation-s06_click.a11y.json"
+  },
+  "status": "escalated",
+  "interventionId": "int_567bffad",
+  "reason": "The application returned an unexpected system error. A human must confirm whether the transaction partially applied before anything is retried.",
+  "resumable": true
+}

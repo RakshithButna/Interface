@@ -1,0 +1,126 @@
+{
+  "status": "succeeded",
+  "goal": "Look up member ***2345 and read their current savings balance",
+  "summary": "Retrieved the current savings balance for member ***2345, which is $4,281.37.",
+  "checkpointText": "$4,281.37",
+  "outputs": {
+    "savingsBalance": "$4,281.37"
+  },
+  "llmCalls": 10,
+  "promptTokens": 27321,
+  "completionTokens": 895,
+  "actions": [
+    {
+      "seq": 1,
+      "kind": "fill",
+      "intent": "enter operator username",
+      "risk": "safe",
+      "riskReason": "entering data into an unsubmitted form is reversible",
+      "control": {
+        "role": "textbox",
+        "name": "Operator ID",
+        "field": "username"
+      },
+      "value": "{{secret:operatorUsername}}",
+      "urlBefore": "http://127.0.0.1:4173/t/westside/",
+      "urlAfter": "http://127.0.0.1:4173/t/westside/"
+    },
+    {
+      "seq": 2,
+      "kind": "fill",
+      "intent": "enter operator password",
+      "risk": "safe",
+      "riskReason": "entering data into an unsubmitted form is reversible",
+      "control": {
+        "role": "textbox",
+        "name": "Password",
+        "field": "password"
+      },
+      "value": "{{secret:operatorPassword}}",
+      "urlBefore": "http://127.0.0.1:4173/t/westside/",
+      "urlAfter": "http://127.0.0.1:4173/t/westside/"
+    },
+    {
+      "seq": 3,
+      "kind": "click",
+      "intent": "sign on to the system",
+      "risk": "safe",
+      "riskReason": "'Sign On' is a navigation or search control",
+      "control": {
+        "role": "button",
+        "name": "Sign On"
+      },
+      "urlBefore": "http://127.0.0.1:4173/t/westside/",
+      "urlAfter": "http://127.0.0.1:4173/t/westside/desktop"
+    },
+    {
+      "seq": 4,
+      "kind": "click",
+      "intent": "navigate to member search",
+      "risk": "safe",
+      "riskReason": "link navigation",
+      "control": {
+        "role": "link",
+        "name": "Member Search"
+      },
+      "urlBefore": "http://127.0.0.1:4173/t/westside/desktop",
+      "urlAfter": "http://127.0.0.1:4173/t/westside/desktop"
+    },
+    {
+      "seq": 5,
+      "kind": "fill",
+      "intent": "enter member ID for search",
+      "risk": "safe",
+      "riskReason": "entering data into an unsubmitted form is reversible",
+      "control": {
+        "role": "textbox",
+        "name": "Member ID",
+        "field": "memberId"
+      },
+      "value": "***2345",
+      "urlBefore": "http://127.0.0.1:4173/t/westside/desktop",
+      "urlAfter": "http://127.0.0.1:4173/t/westside/desktop"
+    },
+    {
+      "seq": 6,
+      "kind": "click",
+      "intent": "perform member search",
+      "risk": "safe",
+      "riskReason": "'Search' is a navigation or search control",
+      "control": {
+        "role": "button",
+        "name": "Search"
+      },
+      "urlBefore": "http://127.0.0.1:4173/t/westside/desktop",
+      "urlAfter": "http://127.0.0.1:4173/t/westside/desktop"
+    },
+    {
+      "seq": 7,
+      "kind": "click",
+      "intent": "view member details",
+      "risk": "safe",
+      "riskReason": "'View' is a navigation or search control",
+      "control": {
+        "role": "link",
+        "name": "View"
+      },
+      "urlBefore": "http://127.0.0.1:4173/t/westside/desktop",
+      "urlAfter": "http://127.0.0.1:4173/t/westside/desktop"
+    },
+    {
+      "seq": 8,
+      "kind": "extract",
+      "intent": "extract savings balance",
+      "risk": "safe",
+      "riskReason": "extract does not modify institution state",
+      "control": {
+        "role": "cell",
+        "name": "Primary Share Savings"
+      },
+      "outputName": "savingsBalance",
+      "extractedValue": "$4,281.37",
+      "urlBefore": "http://127.0.0.1:4173/t/westside/desktop",
+      "urlAfter": "http://127.0.0.1:4173/t/westside/desktop"
+    }
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "runId": "20260817-031704-replay-1syo",
+  "capability": "member.lookup_savings_balance",
+  "capabilityVersion": "1.0.0",
+  "tenantId": "westside",
+  "startedAt": "2026-08-17T03:17:04.343Z",
+  "durationMs": 3683,
+  "steps": [
+    {
+      "stepId": "s00_navigate",
+      "intent": "Open the application entry point",
+      "status": "ok",
+      "risk": "safe",
+      "durationMs": 1044
+    },
+    {
+      "stepId": "s01_fill",
+      "intent": "enter operator username",
+      "status": "ok",
+      "risk": "safe",
+      "durationMs": 73,
+      "resolvedBy": "formField",
+      "resolvedRank": 2
+    },
+    {
+      "stepId": "s02_fill",
+      "intent": "enter operator password",
+      "status": "ok",
+      "risk": "safe",
+      "durationMs": 58,
+      "resolvedBy": "formField",
+      "resolvedRank": 2
+    },
+    {
+      "stepId": "s03_click",
+      "intent": "sign on to the system",
+      "status": "ok",
+      "risk": "safe",
+      "durationMs": 610,
+      "resolvedBy": "roleName",
+      "resolvedRank": 3
+    },
+    {
+      "stepId": "s04_click",
+      "intent": "navigate to member search",
+      "status": "ok",
+      "risk": "safe",
+      "durationMs": 621,
+      "resolvedBy": "roleName",
+      "resolvedRank": 3
+    },
+    {
+      "stepId": "s05_fill",
+      "intent": "enter member ID for search",
+      "status": "ok",
+      "risk": "safe",
+      "durationMs": 47,
+      "resolvedBy": "formField",
+      "resolvedRank": 2
+    },
+    {
+      "stepId": "s06_click",
+      "intent": "perform member search",
+      "status": "ok",
+      "risk": "safe",
+      "durationMs": 596,
+      "resolvedBy": "roleName",
+      "resolvedRank": 3
+    },
+    {
+      "stepId": "s07_click",
+      "intent": "view member details",
+      "status": "ok",
+      "risk": "safe",
+      "durationMs": 0,
+      "note": "stopped here: business outcome PERMISSION_DENIED"
+    }
+  ],
+  "warnings": [],
+  "evidence": {
+    "runLogPath": "run.jsonl",
+    "screenshotPath": "screenshots/outcome-permission_denied.png",
+    "domSnapshotPath": "snapshots/outcome-permission_denied.html",
+    "a11ySnapshotPath": "snapshots/outcome-permission_denied.a11y.json"
+  },
+  "status": "outcome",
+  "outcome": "PERMISSION_DENIED",
+  "message": "This member record is restricted; a supervisor override is required.",
+  "disposition": "terminal",
+  "partialOutputs": {}
+}

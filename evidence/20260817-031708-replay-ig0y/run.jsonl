@@ -1,0 +1,22 @@
+{"ts":"2026-08-17T03:17:08.454Z","seq":1,"event":"replay_started","capability":"member.lookup_savings_balance@1.0.0","status":"draft","tenant":"westside","mode":"attended","steps":9,"overrideApplied":false}
+{"ts":"2026-08-17T03:17:08.455Z","seq":2,"event":"step_started","stepId":"s00_navigate","intent":"Open the application entry point","risk":"safe","action":"navigate"}
+{"ts":"2026-08-17T03:17:09.493Z","seq":3,"event":"step_ok","stepId":"s00_navigate","durationMs":1038,"recoveries":[]}
+{"ts":"2026-08-17T03:17:09.494Z","seq":4,"event":"step_started","stepId":"s01_fill","intent":"enter operator username","risk":"safe","action":"fill"}
+{"ts":"2026-08-17T03:17:09.560Z","seq":5,"event":"step_ok","stepId":"s01_fill","durationMs":66,"resolvedBy":"formField","recoveries":[]}
+{"ts":"2026-08-17T03:17:09.560Z","seq":6,"event":"step_started","stepId":"s02_fill","intent":"enter operator password","risk":"safe","action":"fill"}
+{"ts":"2026-08-17T03:17:09.623Z","seq":7,"event":"step_ok","stepId":"s02_fill","durationMs":63,"resolvedBy":"formField","recoveries":[]}
+{"ts":"2026-08-17T03:17:09.623Z","seq":8,"event":"step_started","stepId":"s03_click","intent":"sign on to the system","risk":"safe","action":"click"}
+{"ts":"2026-08-17T03:17:10.239Z","seq":9,"event":"step_ok","stepId":"s03_click","durationMs":616,"resolvedBy":"roleName","recoveries":[]}
+{"ts":"2026-08-17T03:17:10.239Z","seq":10,"event":"step_started","stepId":"s04_click","intent":"navigate to member search","risk":"safe","action":"click"}
+{"ts":"2026-08-17T03:17:10.870Z","seq":11,"event":"step_ok","stepId":"s04_click","durationMs":631,"resolvedBy":"roleName","recoveries":[]}
+{"ts":"2026-08-17T03:17:10.870Z","seq":12,"event":"step_started","stepId":"s05_fill","intent":"enter member ID for search","risk":"safe","action":"fill"}
+{"ts":"2026-08-17T03:17:10.916Z","seq":13,"event":"step_ok","stepId":"s05_fill","durationMs":46,"resolvedBy":"formField","recoveries":[]}
+{"ts":"2026-08-17T03:17:10.916Z","seq":14,"event":"step_started","stepId":"s06_click","intent":"perform member search","risk":"safe","action":"click"}
+{"ts":"2026-08-17T03:17:11.511Z","seq":15,"event":"step_ok","stepId":"s06_click","durationMs":595,"resolvedBy":"roleName","recoveries":[]}
+{"ts":"2026-08-17T03:17:11.511Z","seq":16,"event":"step_started","stepId":"s07_click","intent":"view member details","risk":"safe","action":"click"}
+{"ts":"2026-08-17T03:17:12.106Z","seq":17,"event":"recovery_applied","rule":"dismiss-maintenance-notice","stepId":"s07_click","attempt":1,"action":"click","because":"text \"Scheduled Maintenance Notice\" present"}
+{"ts":"2026-08-17T03:17:12.731Z","seq":18,"event":"step_ok","stepId":"s07_click","durationMs":1220,"resolvedBy":"roleName","recoveries":["dismiss-maintenance-notice"]}
+{"ts":"2026-08-17T03:17:12.732Z","seq":19,"event":"step_started","stepId":"s08_extract","intent":"extract savings balance","risk":"safe","action":"extract"}
+{"ts":"2026-08-17T03:17:12.759Z","seq":20,"event":"output_extracted","name":"savingsBalance","value":"$4,281.37"}
+{"ts":"2026-08-17T03:17:12.764Z","seq":21,"event":"step_ok","stepId":"s08_extract","durationMs":32,"resolvedBy":"roleName","recoveries":[]}
+{"ts":"2026-08-17T03:17:12.769Z","seq":22,"event":"replay_succeeded","outputs":{"savingsBalance":4281.37},"warnings":1}

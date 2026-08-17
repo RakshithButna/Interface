@@ -1,7 +1,7 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { Redactor } from '../src/policy/redact.ts';
+import { Redactor, passesLuhn } from '../src/policy/redact.ts';
 import { Guard } from '../src/policy/guard.ts';
 import { classifyRisk } from '../src/policy/risk.ts';
 import { DEFAULT_POLICY, PolicyConfigSchema } from '../src/policy/config.ts';
@@ -38,6 +38,25 @@ describe('redaction', () => {
     const r = make();
     assert.match(r.text('ssn on file: 123-45-6789'), /\[REDACTED:ssn\]/);
     assert.match(r.text('card 4111 1111 1111 1111 charged'), /\[REDACTED:card\]/);
+  });
+
+  test('does not shred identifiers that merely look like card numbers', () => {
+    // A run id like 20260817-025925-discovery-xoij is sixteen dash-separated
+    // digits, so a shape-only card pattern eats it -- destroying the primary
+    // key for tracing a failure through the evidence. Real cards pass Luhn;
+    // timestamps do not.
+    const r = make();
+    const runId = '20260817-025925-discovery-xoij';
+    assert.equal(r.text(runId), runId, 'run ids must survive redaction intact');
+    assert.equal(r.text('order 1234-5678-9012-3456 shipped'), 'order 1234-5678-9012-3456 shipped');
+    // ...while a genuine card is still removed.
+    assert.match(r.text('card 4111111111111111'), /\[REDACTED:card\]/);
+  });
+
+  test('luhn accepts real card numbers and rejects lookalikes', () => {
+    assert.equal(passesLuhn('4111111111111111'), true);
+    assert.equal(passesLuhn('5500 0000 0000 0004'), true);
+    assert.equal(passesLuhn('20260817025925'), false);
   });
 
   test('deep-redacts nested structures and drops credential-shaped keys', () => {

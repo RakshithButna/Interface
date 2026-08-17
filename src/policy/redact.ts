@@ -41,18 +41,60 @@ interface RegisteredValue {
   label: string;
 }
 
+/**
+ * Luhn check, used to stop the card-number pattern from eating things that
+ * merely look like one.
+ *
+ * A digit-run pattern alone is far too eager: `20260817-025925-` is sixteen
+ * digits separated by dashes, so it matched, and every run id in the evidence
+ * directory was rewritten to `[REDACTED:card]`. That is worse than a cosmetic
+ * bug -- the run id is the primary key for tracing a failure back through the
+ * logs, so over-redaction here destroys exactly the traceability the evidence
+ * exists to provide.
+ *
+ * Every real card number satisfies Luhn; timestamps and identifiers almost
+ * never do. Validating before redacting keeps the detector useful without
+ * shredding ordinary text. It is a filter on false positives only -- anything
+ * that passes Luhn is still redacted.
+ */
+export function passesLuhn(candidate: string): boolean {
+  const digits = candidate.replace(/\D/g, '');
+  if (digits.length < 13 || digits.length > 19) return false;
+  let sum = 0;
+  let double = false;
+  for (let i = digits.length - 1; i >= 0; i--) {
+    let d = digits.charCodeAt(i) - 48;
+    if (double) {
+      d *= 2;
+      if (d > 9) d -= 9;
+    }
+    sum += d;
+    double = !double;
+  }
+  return sum % 10 === 0;
+}
+
+/** Extra validation for patterns whose shape alone is not conclusive. */
+const PATTERN_VALIDATORS: Record<string, (match: string) => boolean> = {
+  card: passesLuhn,
+};
+
 export class Redactor {
   private values: RegisteredValue[] = [];
-  private patterns: Array<{ name: string; re: RegExp; replacement: string }>;
+  private patterns: Array<{ name: string; re: RegExp; replacement: string; validate?: (m: string) => boolean }>;
   private keepLast4: boolean;
 
   constructor(config: Pick<PolicyConfig, 'redaction'>) {
     this.keepLast4 = config.redaction.keepLast4ForPii;
-    this.patterns = config.redaction.patterns.map((p) => ({
-      name: p.name,
-      re: new RegExp(p.regex, p.flags),
-      replacement: p.replacement,
-    }));
+    this.patterns = config.redaction.patterns.map((p) => {
+      const validator = PATTERN_VALIDATORS[p.name];
+      return {
+        name: p.name,
+        re: new RegExp(p.regex, p.flags),
+        replacement: p.replacement,
+        ...(validator ? { validate: validator } : {}),
+      };
+    });
   }
 
   /**
@@ -95,7 +137,9 @@ export class Redactor {
     for (const p of this.patterns) {
       // Regexes with /g carry lastIndex state across calls; reset defensively.
       p.re.lastIndex = 0;
-      out = out.replace(p.re, p.replacement);
+      out = out.replace(p.re, (match) =>
+        p.validate && !p.validate(match) ? match : p.replacement,
+      );
     }
 
     return out;

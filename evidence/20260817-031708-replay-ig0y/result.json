@@ -1,0 +1,106 @@
+{
+  "runId": "20260817-031708-replay-ig0y",
+  "capability": "member.lookup_savings_balance",
+  "capabilityVersion": "1.0.0",
+  "tenantId": "westside",
+  "startedAt": "2026-08-17T03:17:08.454Z",
+  "durationMs": 4315,
+  "steps": [
+    {
+      "stepId": "s00_navigate",
+      "intent": "Open the application entry point",
+      "status": "ok",
+      "risk": "safe",
+      "durationMs": 1038
+    },
+    {
+      "stepId": "s01_fill",
+      "intent": "enter operator username",
+      "status": "ok",
+      "risk": "safe",
+      "durationMs": 66,
+      "resolvedBy": "formField",
+      "resolvedRank": 2
+    },
+    {
+      "stepId": "s02_fill",
+      "intent": "enter operator password",
+      "status": "ok",
+      "risk": "safe",
+      "durationMs": 63,
+      "resolvedBy": "formField",
+      "resolvedRank": 2
+    },
+    {
+      "stepId": "s03_click",
+      "intent": "sign on to the system",
+      "status": "ok",
+      "risk": "safe",
+      "durationMs": 616,
+      "resolvedBy": "roleName",
+      "resolvedRank": 3
+    },
+    {
+      "stepId": "s04_click",
+      "intent": "navigate to member search",
+      "status": "ok",
+      "risk": "safe",
+      "durationMs": 631,
+      "resolvedBy": "roleName",
+      "resolvedRank": 3
+    },
+    {
+      "stepId": "s05_fill",
+      "intent": "enter member ID for search",
+      "status": "ok",
+      "risk": "safe",
+      "durationMs": 46,
+      "resolvedBy": "formField",
+      "resolvedRank": 2
+    },
+    {
+      "stepId": "s06_click",
+      "intent": "perform member search",
+      "status": "ok",
+      "risk": "safe",
+      "durationMs": 595,
+      "resolvedBy": "roleName",
+      "resolvedRank": 3
+    },
+    {
+      "stepId": "s07_click",
+      "intent": "view member details",
+      "status": "recovered",
+      "risk": "safe",
+      "durationMs": 1220,
+      "resolvedBy": "roleName",
+      "resolvedRank": 3,
+      "recoveriesApplied": [
+        "dismiss-maintenance-notice"
+      ]
+    },
+    {
+      "stepId": "s08_extract",
+      "intent": "extract savings balance",
+      "status": "ok",
+      "risk": "safe",
+      "durationMs": 32,
+      "resolvedBy": "roleName",
+      "resolvedRank": 3
+    }
+  ],
+  "warnings": [
+    {
+      "code": "RECOVERY_APPLIED",
+      "stepId": "s07_click",
+      "message": "Applied recovery 'dismiss-maintenance-notice': An unscheduled maintenance interstitial can appear on any navigation. Dismissing it is safe and returns to the page that was requested."
+    }
+  ],
+  "evidence": {
+    "runLogPath": "run.jsonl"
+  },
+  "status": "success",
+  "outputs": {
+    "savingsBalance": 4281.37
+  }
+}

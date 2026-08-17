@@ -1,0 +1,110 @@
+{
+  "runId": "20260817-031722-replay-fezd",
+  "capability": "member.lookup_savings_balance",
+  "capabilityVersion": "1.0.0",
+  "tenantId": "lakeshore",
+  "startedAt": "2026-08-17T03:17:22.107Z",
+  "durationMs": 4372,
+  "steps": [
+    {
+      "stepId": "s00_navigate",
+      "intent": "Open the application entry point",
+      "status": "ok",
+      "risk": "safe",
+      "durationMs": 1050
+    },
+    {
+      "stepId": "s01_fill",
+      "intent": "enter operator username",
+      "status": "ok",
+      "risk": "safe",
+      "durationMs": 67,
+      "resolvedBy": "formField",
+      "resolvedRank": 2
+    },
+    {
+      "stepId": "s02_fill",
+      "intent": "enter operator password",
+      "status": "ok",
+      "risk": "safe",
+      "durationMs": 68,
+      "resolvedBy": "formField",
+      "resolvedRank": 2
+    },
+    {
+      "stepId": "s03_click",
+      "intent": "sign on to the system",
+      "status": "recovered",
+      "risk": "safe",
+      "durationMs": 1233,
+      "resolvedBy": "roleName",
+      "resolvedRank": 3,
+      "recoveriesApplied": [
+        "acknowledge-compliance-notice"
+      ]
+    },
+    {
+      "stepId": "s04_click",
+      "intent": "navigate to member search",
+      "status": "ok",
+      "risk": "safe",
+      "durationMs": 634,
+      "resolvedBy": "roleName",
+      "resolvedRank": 3
+    },
+    {
+      "stepId": "s05_fill",
+      "intent": "enter member ID for search",
+      "status": "ok",
+      "risk": "safe",
+      "durationMs": 58,
+      "resolvedBy": "formField",
+      "resolvedRank": 2
+    },
+    {
+      "stepId": "s06_click",
+      "intent": "perform member search",
+      "status": "ok",
+      "risk": "safe",
+      "durationMs": 600,
+      "resolvedBy": "roleName",
+      "resolvedRank": 3
+    },
+    {
+      "stepId": "s07_click",
+      "intent": "view member details",
+      "status": "ok",
+      "risk": "safe",
+      "durationMs": 619,
+      "resolvedBy": "roleName",
+      "resolvedRank": 3
+    },
+    {
+      "stepId": "s08_extract",
+      "intent": "extract savings balance",
+      "status": "ok",
+      "risk": "safe",
+      "durationMs": 32,
+      "resolvedBy": "roleName",
+      "resolvedRank": 3
+    }
+  ],
+  "warnings": [
+    {
+      "code": "TENANT_OVERRIDE_APPLIED",
+      "message": "Running against tenant 'lakeshore' using overrides (10 label aliases, 3 route aliases)."
+    },
+    {
+      "code": "RECOVERY_APPLIED",
+      "stepId": "s03_click",
+      "message": "Applied recovery 'acknowledge-compliance-notice': Some institutions configure a compliance acknowledgement after sign-on. Acknowledging it is required to reach any servicing screen and changes no member state."
+    }
+  ],
+  "evidence": {
+    "runLogPath": "run.jsonl"
+  },
+  "status": "success",
+  "outputs": {
+    "savingsBalance": 4281.37
+  }
+}

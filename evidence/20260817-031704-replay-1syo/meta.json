@@ -1,0 +1,10 @@
+{
+  "runId": "20260817-031704-replay-1syo",
+  "kind": "replay",
+  "startedAt": "2026-08-17T03:17:04.240Z",
+  "finishedAt": "2026-08-17T03:17:08.027Z",
+  "redactedValueCount": 5,
+  "status": "outcome",
+  "capability": "member.lookup_savings_balance@1.0.0",
+  "tenant": "westside"
+}

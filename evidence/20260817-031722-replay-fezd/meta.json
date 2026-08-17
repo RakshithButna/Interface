@@ -1,0 +1,10 @@
+{
+  "runId": "20260817-031722-replay-fezd",
+  "kind": "replay",
+  "startedAt": "2026-08-17T03:17:22.004Z",
+  "finishedAt": "2026-08-17T03:17:26.481Z",
+  "redactedValueCount": 5,
+  "status": "success",
+  "capability": "member.lookup_savings_balance@1.0.0",
+  "tenant": "lakeshore"
+}

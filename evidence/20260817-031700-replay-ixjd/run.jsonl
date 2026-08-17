@@ -1,0 +1,15 @@
+{"ts":"2026-08-17T03:17:00.851Z","seq":1,"event":"replay_started","capability":"member.lookup_savings_balance@1.0.0","status":"draft","tenant":"westside","mode":"attended","steps":9,"overrideApplied":false}
+{"ts":"2026-08-17T03:17:00.852Z","seq":2,"event":"step_started","stepId":"s00_navigate","intent":"Open the application entry point","risk":"safe","action":"navigate"}
+{"ts":"2026-08-17T03:17:01.898Z","seq":3,"event":"step_ok","stepId":"s00_navigate","durationMs":1046,"recoveries":[]}
+{"ts":"2026-08-17T03:17:01.899Z","seq":4,"event":"step_started","stepId":"s01_fill","intent":"enter operator username","risk":"safe","action":"fill"}
+{"ts":"2026-08-17T03:17:01.951Z","seq":5,"event":"step_ok","stepId":"s01_fill","durationMs":52,"resolvedBy":"formField","recoveries":[]}
+{"ts":"2026-08-17T03:17:01.951Z","seq":6,"event":"step_started","stepId":"s02_fill","intent":"enter operator password","risk":"safe","action":"fill"}
+{"ts":"2026-08-17T03:17:01.998Z","seq":7,"event":"step_ok","stepId":"s02_fill","durationMs":47,"resolvedBy":"formField","recoveries":[]}
+{"ts":"2026-08-17T03:17:01.999Z","seq":8,"event":"step_started","stepId":"s03_click","intent":"sign on to the system","risk":"safe","action":"click"}
+{"ts":"2026-08-17T03:17:02.602Z","seq":9,"event":"step_ok","stepId":"s03_click","durationMs":603,"resolvedBy":"roleName","recoveries":[]}
+{"ts":"2026-08-17T03:17:02.603Z","seq":10,"event":"step_started","stepId":"s04_click","intent":"navigate to member search","risk":"safe","action":"click"}
+{"ts":"2026-08-17T03:17:03.244Z","seq":11,"event":"step_ok","stepId":"s04_click","durationMs":641,"resolvedBy":"roleName","recoveries":[]}
+{"ts":"2026-08-17T03:17:03.244Z","seq":12,"event":"step_started","stepId":"s05_fill","intent":"enter member ID for search","risk":"safe","action":"fill"}
+{"ts":"2026-08-17T03:17:03.295Z","seq":13,"event":"step_ok","stepId":"s05_fill","durationMs":51,"resolvedBy":"formField","recoveries":[]}
+{"ts":"2026-08-17T03:17:03.296Z","seq":14,"event":"step_started","stepId":"s06_click","intent":"perform member search","risk":"safe","action":"click"}
+{"ts":"2026-08-17T03:17:03.920Z","seq":15,"event":"business_outcome","outcome":"MEMBER_NOT_FOUND","stepId":"s06_click","message":"No member record matched the supplied identifier."}

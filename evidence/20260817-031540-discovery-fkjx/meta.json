@@ -1,0 +1,12 @@
+{
+  "runId": "20260817-031540-discovery-fkjx",
+  "kind": "discovery",
+  "startedAt": "2026-08-17T03:15:40.158Z",
+  "finishedAt": "2026-08-17T03:16:51.699Z",
+  "redactedValueCount": 3,
+  "status": "succeeded",
+  "capability": "member.lookup_savings_balance@1.0.0",
+  "warnings": [
+    "The run nominated \"$4,281.37\" as the success condition, but that is a value from this run rather than a property of the flow -- it would only ever hold for these exact inputs. Replaced with a structural condition; review that it is right."
+  ]
+}
