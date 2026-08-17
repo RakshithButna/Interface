@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "title": "member.lookup_savings_balance",
   "description": "Look up member ${memberId} and read their current savings balance",
-  "status": "approved",
+  "status": "draft",
   "app": {
     "productId": "memberfirst-core",
     "productVersion": "7.2.1",
