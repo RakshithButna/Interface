@@ -68,10 +68,31 @@ export interface LlmProvider {
 export class LlmError extends Error {
   readonly status: number | undefined;
   readonly body: string | undefined;
-  constructor(message: string, status?: number, body?: string) {
+  /**
+   * Explicit retryability, when the status code alone cannot express it.
+   *
+   * A network failure has no status and should be retried; a safety refusal
+   * also has no status (it arrives as a perfectly good HTTP 200) and must NOT
+   * be, because it will resolve identically every time and each attempt costs
+   * the run part of its budget.
+   */
+  readonly retryable: boolean | undefined;
+
+  constructor(message: string, status?: number, body?: string, retryable?: boolean) {
     super(message);
     this.name = 'LlmError';
     this.status = status;
     this.body = body;
+    this.retryable = retryable;
   }
+}
+
+/** Shared retry predicate, so every provider agrees on what is transient. */
+export function isTransient(err: unknown): boolean {
+  if (!(err instanceof LlmError)) return true;
+  if (err.retryable !== undefined) return err.retryable;
+  const s = err.status;
+  // No status means a transport failure, which is worth another attempt.
+  // A 400 will fail identically forever; retrying it just burns the budget.
+  return s === undefined || s === 429 || (s >= 500 && s < 600);
 }

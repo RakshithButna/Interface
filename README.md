@@ -42,17 +42,22 @@ Only the **discovery** run needs a model. Replay never reads an API key.
 cp .env.example .env
 ```
 
-Then put a key in `.env`. A **free** Groq key from <https://console.groq.com/keys> is enough:
+Then put **any one** model key in `.env` — the provider is auto-detected, so there is nothing else to set:
 
-```
-LLM_PROVIDER=groq
-GROQ_API_KEY=gsk_...
-GROQ_MODEL=moonshotai/kimi-k2-instruct
-```
+| Provider | Variable | Notes |
+|---|---|---|
+| Anthropic | `ANTHROPIC_API_KEY` | defaults to `claude-opus-5` |
+| Groq | `GROQ_API_KEY` | free tier; the default used for this project's demo |
+| OpenAI | `OPENAI_API_KEY` | |
+| OpenRouter | `OPENROUTER_API_KEY` | |
+| Together | `TOGETHER_API_KEY` | |
+| vLLM / Ollama / any OpenAI-compatible endpoint | `OPENAI_COMPATIBLE_BASE_URL` + `_API_KEY` | |
 
-`OPENAI_API_KEY` with `LLM_PROVIDER=openai` also works — the agent loop is written against a provider interface and both are served by the same OpenAI-compatible client.
+Override the model with `ANTHROPIC_MODEL` / `GROQ_MODEL` / `OPENAI_MODEL`; force a provider with `LLM_PROVIDER` if several keys are present. If no key is found, the CLI prints the full list rather than failing cryptically.
 
-Because perception is the **accessibility tree** rather than screenshots, a text-only model is sufficient. See REPORT.md §1 for why that is the stronger choice here rather than a compromise.
+The agent loop is written against a `LlmProvider` interface and imports no vendor client. Two implementations sit behind it: one OpenAI-compatible client covering most vendors, and a separate Anthropic client because the Messages API is a genuinely different wire format (top-level `system`, `input_schema` tools, `tool_use` content blocks, and no sampling parameters — those return a 400 on current models). Both are covered by wire-format tests in `tests/llm.test.ts`.
+
+Because perception is the **accessibility tree** rather than screenshots, a text-only model is sufficient — see REPORT.md §1 for why that is the stronger choice here rather than a compromise.
 
 `.env` is gitignored, and the redactor scrubs secrets from every log, artifact and snapshot.
 

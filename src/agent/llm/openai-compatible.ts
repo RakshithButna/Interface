@@ -18,6 +18,7 @@ import {
   type LlmMessage,
   type ToolCall,
   LlmError,
+  isTransient,
 } from './provider.ts';
 
 interface WireToolCall {
@@ -79,11 +80,8 @@ export class OpenAICompatibleProvider implements LlmProvider {
         return await this.once(body);
       } catch (err) {
         lastErr = err;
-        // Retry only on transient conditions. A 400 will fail identically
-        // forever and retrying it just burns the run's budget.
-        const status = err instanceof LlmError ? err.status : undefined;
-        const transient = status === undefined || status === 429 || (status >= 500 && status < 600);
-        if (!transient || attempt === this.maxRetries) break;
+        // Retry only on transient conditions -- see isTransient().
+        if (!isTransient(err) || attempt === this.maxRetries) break;
         const backoff = Math.min(8000, 500 * 2 ** attempt) + Math.random() * 250;
         await new Promise((r) => setTimeout(r, backoff));
       }
